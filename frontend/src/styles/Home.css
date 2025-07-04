@@ -1,0 +1,97 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+.home1-container {
+  color: #172c66;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 50px;
+
+}
+.home2-container {
+  width: 400px;
+  height: auto;
+  background-color: #f3d2c1;
+  text-align: center;
+  border-top-right-radius: 10px;
+  border-top-left-radius: 10px;
+  box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
+
+}
+.home2-container h1 {
+  color: #001858;
+  font-family: "Chewy", system-ui;
+  font-weight: 400;
+  font-size: 4rem;
+}
+.home3-container{
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
+.home3-container button {
+  width: 190px;
+  height: 60px;
+  border: none;
+  padding: 10px;
+  font-family: "Luckiest Guy", cursive;
+  font-size: 1.5rem;
+  color: #172c66;
+  border-radius: 15px;
+  
+}
+.home3-container .create{
+  background-color: #f582ae;
+}
+.home3-container .join{
+  background-color: #8bd3dd;
+}
+
+@media screen and (max-width: 768px) {
+  .home1-container {
+    height: auto;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 10px;
+  }
+
+  .home2-container,
+  .home3-container,
+  .home4-container {
+    width: 100%;
+    max-width: 350px; /* Optional: restrict it for better readability */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .home3-container {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .home3-container button {
+    width: 100%;
+  }
+
+  .home2-container h1 {
+    font-size: 3rem;
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+}
+
