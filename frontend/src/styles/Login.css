@@ -92,6 +92,12 @@ input {
 input::placeholder {
   color: #9c99a4;
 }
+.error-message {
+  color: red;
+  font-size: 0.85rem;
+  margin-top: 4px;
+  margin-bottom: 10px;
+}
 
 .socials {
   display: flex;

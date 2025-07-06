@@ -1,19 +1,43 @@
 import { useState } from 'react';
 import google from '../assets/google.svg'
 import facbook from '../assets/facebook.svg'
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import '../styles/Login.css';
 
 const SignUp = () => {
-    const [name, setName] = useState();
-    const [email, setEmail] = useState();
-    const [password, setPassword] = useState();
+    const backendUrl = "http://localhost:8000"
+    const navigate = useNavigate('')
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
+    const handleSubmit = async (event) => {
+       try {
+         event.preventDefault();
+        setErrorMessage('');
+        const response =  await axios.post(backendUrl + "/user/register",{
+            name,email,password
+        });
+        if (response.data.success) {
+            navigate('/home');
+        } else {
+            setErrorMessage(
+            error.response?.data?.message || "Server error. Please try again."
+        );
+        }
+
+        
+       } catch (error) {
+            console.log(error)
+       }
+    }
     return (
         <div className='body-container'>
             <div className="card">
                 <div className="hero">
                 </div>
-                <form>
+                <form onSubmit={handleSubmit}>
                     <h2>Drawsarous</h2>
                     <h3>Create new account</h3>
                     <div className="socials">
@@ -27,10 +51,10 @@ const SignUp = () => {
                         </button>
                     </div>
                     <span className="or"></span>
-                    <input type="text" 
-                    placeholder='UserName'
-                    value={name}
-                    onChange={(e)=>setName(e.target.value)} />
+                    <input type="text"
+                        placeholder='UserName'
+                        value={name}
+                        onChange={(e) => setName(e.target.value)} />
                     <input type="email"
                         placeholder="Email"
                         value={email}
@@ -39,7 +63,10 @@ const SignUp = () => {
                         placeholder="Password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)} />
-                    <button type="submit">Login</button>
+                    {errorMessage && (
+                        <p className="error-message">{errorMessage}</p>
+                    )}
+                    <button type="submit">Sign Up</button>
                     <p className='signup-link'>
                         Already have an account? <Link to='/login' className='highlight'>Login</Link>
                     </p>
