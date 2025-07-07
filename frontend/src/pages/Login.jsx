@@ -2,35 +2,25 @@ import google from '../assets/google.svg'
 import facbook from '../assets/facebook.svg'
 import { Link, useNavigate } from 'react-router-dom';
 import '../styles/Login.css';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import axios from "axios"
+import { AuthContext } from '../../context/AuthContext';
 
 
 const Login = () => {
-    const backendUrl = "http://localhost:8000";
-    const navigate = useNavigate('');
+    const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [errorMessage, setErrorMessage] = useState('');
+    const {login,errorMessage}= useContext(AuthContext);
 
 
-    const handleSubmit = async (e) => {
-        e.preventDefault()
-        setErrorMessage('');
-        try {
-            const response = await axios.post(backendUrl + "/user/login", {
-                email, password
-            })
-            if (response.data.success) {
-                navigate('/home')
-            } else {
-                setErrorMessage(response.data.message || "server Error")
-            }
-        } catch (error) {
-            console.error(error);
 
+    const handleSubmit = async (event) => {
+        event.preventDefault()
+        const success = await login("login",{email,password})  
+        if(success){
+            navigate('/')
         }
-
     }
 
     return (

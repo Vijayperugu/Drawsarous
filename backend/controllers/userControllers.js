@@ -97,4 +97,12 @@ const registerUser = async (req, res) => {
     console.error(error);
   }
 };
-export { loginUser, registerUser };
+
+const checkAuth =(req,res)=>{
+  res.json({
+    success:true,
+    user:req.user
+  })
+  
+}
+export { loginUser, registerUser,checkAuth };
