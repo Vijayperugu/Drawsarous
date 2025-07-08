@@ -1,69 +1,102 @@
-import React from 'react'
-import { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useContext, useCallback } from 'react'
 import '../styles/Canvas.css'
+import { GameContext } from '../../context/GameContext.jsx'
 
 const Canvas = () => {
-    const canvasRef = useRef(null);
-    const [drawing, setDrawing] = useState(false);
-    const [color, setColor] = useState('#000000');
-    const [size, setSize] = useState(4);
+  const canvasRef = useRef(null)
+  const ctxRef = useRef(null)
+  const [drawing, setDrawing] = useState(false)
+  const [color, setColor] = useState('#000000')
+  const [size, setSize] = useState(4)
+  const { sendDrawing, socket } = useContext(GameContext);
 
-    useEffect(() => {
-        const canvas = canvasRef.current;
-        const ctx = canvas.getContext('2d');
+  useEffect(() => {
+    const canvas = canvasRef.current
+    ctxRef.current = canvas.getContext('2d')
+  }, [])
 
-        const draw = (event) => {
-            if (!drawing) return;
+  const draw = useCallback((event) => {
+    if (!drawing) return
+    const ctx = ctxRef.current
+    if (!ctx) return
+    const { offsetX, offsetY } = event
 
-            ctx.lineWidth = size;
-            ctx.lineCap = 'round';
-            ctx.strokeStyle = color;
+    ctx.lineWidth = size
+    ctx.lineCap = 'round'
+    ctx.strokeStyle = color
+    ctx.lineTo(offsetX, offsetY)
+    ctx.stroke()
+    ctx.beginPath()
+    ctx.moveTo(offsetX, offsetY)
 
-            ctx.lineTo(event.offsetX, event.offsetY);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(event.offsetX, event.offsetY);
-        };
+    if (sendDrawing) {
+      sendDrawing({ offsetX, offsetY, color, size })
+    }
+  }, [drawing, color, size, sendDrawing])
 
-        canvas.addEventListener('mousemove', draw);
-        return () => canvas.removeEventListener('mousemove', draw);
-    }, [drawing, color, size]);
+  const handleReceiveDrawing = useCallback((data) => {
+    const ctx = ctxRef.current
+    if (!ctx) return
+    const { offsetX, offsetY, color, size } = data
+    ctx.lineWidth = size
+    ctx.lineCap = 'round'
+    ctx.strokeStyle = color
+    ctx.lineTo(offsetX, offsetY)
+    ctx.stroke()
+    ctx.beginPath()
+    ctx.moveTo(offsetX, offsetY)
+  }, [])
 
-    const handleMouseDown = () => {
-        setDrawing(true);
-    };
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
 
-    const handleMouseUp = () => {
-        setDrawing(false);
-        const ctx = canvasRef.current.getContext('2d');
-        ctx.beginPath();
-    };
+    canvas.addEventListener('mousemove', draw)
+    if (socket) {
+      socket.on('receive-drawing', handleReceiveDrawing)
+    }
 
-    const clearCanvas = () => {
-        const canvas = canvasRef.current;
-        const ctx = canvas.getContext('2d');
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-    };
+    return () => {
+      canvas.removeEventListener('mousemove', draw)
+      if (socket) {
+        socket.off('receive-drawing', handleReceiveDrawing)
+      }
+    }
+  }, [draw, handleReceiveDrawing, socket])
 
-    return (
-        <div className="canvas1-container">
-            <div className="canvas2-container">
-                <canvas ref={canvasRef} width={800} height={500} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} style={{ backgroundColor: 'white' }}
-                />
-                <div className="controls">
-                    <div>
-                        <label htmlFor="colorPicker">Color:</label>
-                        <input type="color" id="colorPicker" value={color} onChange={(e) => setColor(e.target.value)} />
-                    </div>
-                    <div>
-                        <label htmlFor="brushSize">Size:</label>
-                        <input type="range" id="brushSize" min="1" max="20" value={size} onChange={(e) => setSize(Number(e.target.value))} />
-                    </div>
-                    <button className="clear" onClick={clearCanvas}>Clear</button>
-                </div>
-            </div>
+  return (
+    <div className="canvas1-container">
+      <div className="canvas2-container">
+        <canvas
+          ref={canvasRef}
+          width={800}
+          height={500}
+          onMouseDown={() => setDrawing(true)}
+          onMouseUp={() => {
+            setDrawing(false)
+            const ctx = ctxRef.current
+            if (ctx) ctx.beginPath()
+          }}
+          style={{ backgroundColor: 'white' }}
+        />
+        <div className="controls">
+          <div>
+            <label htmlFor="colorPicker">Color:</label>
+            <input type="color" id="colorPicker" value={color} onChange={(e) => setColor(e.target.value)} />
+          </div>
+          <div>
+            <label htmlFor="brushSize">Size:</label>
+            <input type="range" id="brushSize" min="1" max="20" value={size} onChange={(e) => setSize(Number(e.target.value))} />
+          </div>
+          <button className="clear" onClick={() => {
+            const canvas = canvasRef.current
+            const ctx = ctxRef.current
+            if (canvas && ctx) ctx.clearRect(0, 0, canvas.width, canvas.height)
+          }}>Clear</button>
         </div>
-    )
+      </div>
+    </div>
+  )
 }
 
 export default Canvas

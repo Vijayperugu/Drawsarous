@@ -4,7 +4,8 @@ import cors from 'cors'
 import connectDb from './config/mongodb.js';
 import userRouter from './routes/userRoute.js';
 import {Server} from 'socket.io';
-import { Socket } from 'dgram';
+import RoomModal from './model/RoomModal.js';
+import roomRoute from './routes/roomRoute.js'
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -24,6 +25,15 @@ io.on("connection",(socket)=>{
     if(userId) userSocketMap[userId]=socket.id;
 
     io.emit("getOnlineUsers",Object.keys(userSocketMap));
+
+    socket.on('join-room', async ({ roomCode, username }) => {
+    socket.join(roomCode)
+    io.to(roomCode).emit('player-joined', { username })
+  })
+
+  socket.on('send-drawing', ({ roomCode, drawing }) => {
+    socket.to(roomCode).emit('receive-drawing', drawing)
+  })
 
     socket.on("disconnect",()=>{
         console.log("User Disconnected",userId);
@@ -45,7 +55,7 @@ connectDb();
 app.get('/',(req,res)=>{
     res.send("Drawsarous Project")
 })
-
+app.use('/api/user',roomRoute)
 app.use('/user',userRouter);
 
 server.listen(8000,()=>{

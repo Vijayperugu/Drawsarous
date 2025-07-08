@@ -1,22 +1,40 @@
-import React from 'react'
-import { FaLock } from "react-icons/fa";
+import React, { useContext } from 'react'
+import { FaLock } from "react-icons/fa"
+import { ImCross } from "react-icons/im"
+import axios from 'axios'
+import { GameContext } from "../../context/GameContext.jsx"
 import '../styles/CreateRoom.css'
-import { ImCross } from "react-icons/im";
+import { AuthContext } from '../../context/AuthContext.jsx'
+import { useNavigate } from 'react-router-dom'
 
+const CreateRoom = ({ setGameState }) => {
+  const { joinRoomSocket } = useContext(GameContext)
+  const { authUser, socket } = useContext(AuthContext)
+  const navigate = useNavigate();
 
-const CreateRoom = ({setGameState}) => {
+  const handleCreate = async () => {
+    if (!socket?.id) return alert("Socket not connected. Please try again.");
+    try {
+      const response = await axios.post("http://localhost:8000/api/user/createRoom", {
+        socketId: socket.id
+      })
+      const { roomCode } = response.data
+      joinRoomSocket({ roomCode, username: authUser.name })
+      navigate('/room')
+    } catch (err) {
+      alert("Error creating room")
+    }
+  }
+
   return (
     <div className="create-container">
       <div className='heading'>
-        <span><FaLock style={{ marginRight: '5px' }} />Create Room</span>
-        <span><ImCross onClick={()=>setGameState("")} style={{cursor:'pointer'}}/></span>
+        <span><FaLock /> Create Room</span>
+        <span><ImCross onClick={() => setGameState("")} style={{ cursor: 'pointer' }} /></span>
       </div>
       <div className='containerTwo'>
-        <input type='text' placeholder='Enter Room Name'></input>
-        <input type='number' placeholder='Enter No of Player'></input>
-        <button className='create'>Create</button>
+        <button className='create' onClick={handleCreate}>Create</button>
       </div>
-      
     </div>
   )
 }

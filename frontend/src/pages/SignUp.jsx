@@ -1,7 +1,7 @@
-import { useState,useContext } from 'react';
+import { useState, useContext } from 'react';
 import google from '../assets/google.svg'
 import facbook from '../assets/facebook.svg'
-import { Link} from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom'; // <-- Add useNavigate
 import { AuthContext } from '../../context/AuthContext';
 import '../styles/Login.css';
 
@@ -9,21 +9,17 @@ const SignUp = () => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const {login,errorMessage}= useContext(AuthContext);
-    const handleSubmit =  (event) => {
-        event.preventDefault()
-       try {
-        
-        login("register",{
-            name,email,password
-        })
-         
+    const { login, errorMessage } = useContext(AuthContext);
+    const navigate = useNavigate(); // <-- Add this
 
-        
-       } catch (error) {
-            console.log(error)
-       }
-    }
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        const success = await login("register", { name, email, password });
+        if (success) {
+            navigate('/'); // Redirect to home on success
+        }
+    };
+
     return (
         <div className='body-container'>
             <div className="card">
@@ -33,11 +29,11 @@ const SignUp = () => {
                     <h2>Drawsarous</h2>
                     <h3>Create new account</h3>
                     <div className="socials">
-                        <button className="social-btn">
+                        <button className="social-btn" type="button">
                             <img src={google} alt="" />
                             <p><span className="extra-text">SignUp with</span> Google</p>
                         </button>
-                        <button className="social-btn">
+                        <button className="social-btn" type="button">
                             <img src={facbook} />
                             <p><span className="extra-text">SignUp with</span> Facebook</p>
                         </button>
