@@ -22,7 +22,7 @@ const PrivateRoom = ({ setGameState }) => {
         socketId: socket.id
       })
       joinRoomSocket({ roomCode, username: authUser?.name })
-      navigate("/room")
+      navigate("/joinRoom")
     } catch (err) {
       console.log(err.response);
       if (err.response && err.response.data && err.response.data.msg) {

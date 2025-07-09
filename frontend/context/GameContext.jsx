@@ -2,16 +2,16 @@ import { createContext, useContext, useState, useEffect } from 'react'
 import { io } from 'socket.io-client'
 import { AuthContext } from './AuthContext.jsx';
 
- export const GameContext = createContext()
+export const GameContext = createContext()
 
 export const GameProvider = ({ children }) => {
   const [roomCode, setRoomCode] = useState(null)
   const [username, setUsername] = useState('')
   const [players, setPlayers] = useState([])
- const { socket } = useContext(AuthContext)
-  
+  const { socket } = useContext(AuthContext)
 
-   useEffect(() => {
+
+  useEffect(() => {
     if (!socket) return;
 
     const handlePlayerJoined = ({ username }) => {
@@ -27,21 +27,28 @@ export const GameProvider = ({ children }) => {
 
   const joinRoomSocket = ({ roomCode, username }) => {
     if (socket) {
-    socket.emit('join-room', { roomCode, username })
-    setRoomCode(roomCode)
-    setUsername(username)
+      socket.emit('join-room', { roomCode, username })
+      setRoomCode(roomCode)
+      setUsername(username)
+    }
   }
+  const clearCanvas = ({ roomCode }) => {
+    if (socket) {
+      socket.emit('clear-canvas', { roomCode })
+    }
   }
 
   const sendDrawing = (data) => {
     socket.emit('send-drawing', { roomCode, drawing: data })
   }
-  const value ={ 
+  const value = {
     roomCode,
     username,
-    players, 
+    players,
     joinRoomSocket,
-    sendDrawing
+    sendDrawing,
+    socket,
+    clearCanvas
   }
 
   return (

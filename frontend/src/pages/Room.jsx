@@ -1,9 +1,7 @@
-import React from 'react'
-import Canvas from '../components/Canvas'
-import Navbar from '../components/Navbar'
 import Chat from '../components/Chat'
 import '../styles/ownerRoom.css'
 import GuessingWord from '../components/GuessingWord'
+import CreateCanvas from '../components/CreateCanvas'
 
 const Room = () => {
   return (
@@ -12,7 +10,7 @@ const Room = () => {
 
       </div>
       <div className="item">
-        <Canvas/></div>
+        <CreateCanvas/></div>
       <div className="item">
         <Chat/>
       </div>

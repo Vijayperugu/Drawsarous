@@ -20,7 +20,7 @@ const CreateRoom = ({ setGameState }) => {
       })
       const { roomCode } = response.data
       joinRoomSocket({ roomCode, username: authUser.name })
-      navigate('/room')
+      navigate('/createroom')
     } catch (err) {
       alert("Error creating room")
     }

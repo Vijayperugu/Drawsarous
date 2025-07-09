@@ -1,0 +1,66 @@
+.joinRoom-container {
+  display: grid;
+  grid-template-areas:
+    "canvas canvas chat";
+  grid-template-columns: 2fr 2fr 1fr;
+  grid-template-rows: auto 1fr;
+  gap: 20px;
+  width: 100vw;
+  min-height: 100vh;
+  padding: 20px;
+  box-sizing: border-box;
+}
+.items:nth-child(1) {
+  grid-area: canvas;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.items:nth-child(2) {
+  grid-area: chat;
+  min-width: 420px;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+@media screen and (max-width: 1024px) {
+  .joinRoom-container {
+    grid-template-areas:
+      "canvas"
+      "chat";
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr 1fr;
+    gap: 16px;
+    padding: 10px;
+  }
+  .items:nth-child(2) {
+    min-width: unset;
+    max-width: unset;
+    height: 300px;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .joinRoom-container {
+    grid-template-areas:
+      "canvas"
+      "chat";
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr 1fr;
+    gap: 10px;
+    padding: 5px;
+  }
+  .items {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+  }
+  .items:nth-child(2) {
+    height: 300px;
+  }
+
+}

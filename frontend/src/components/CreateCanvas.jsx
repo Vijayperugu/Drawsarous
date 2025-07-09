@@ -2,19 +2,15 @@ import React, { useRef, useEffect, useState, useContext, useCallback } from 'rea
 import '../styles/Canvas.css'
 import { GameContext } from '../../context/GameContext.jsx'
 
-const Canvas = () => {
+const CreateCanvas = () => {
   const canvasRef = useRef(null)
   const ctxRef = useRef(null)
   const [drawing, setDrawing] = useState(false)
   const [color, setColor] = useState('#000000')
   const [size, setSize] = useState(4)
-  const { sendDrawing, socket } = useContext(GameContext);
+  const { sendDrawing ,roomCode} = useContext(GameContext);
 
-  useEffect(() => {
-    const canvas = canvasRef.current
-    ctxRef.current = canvas.getContext('2d')
-  }, [])
-
+  // Define draw BEFORE useEffect that uses it!
   const draw = useCallback((event) => {
     if (!drawing) return
     const ctx = ctxRef.current
@@ -25,6 +21,7 @@ const Canvas = () => {
     ctx.lineCap = 'round'
     ctx.strokeStyle = color
     ctx.lineTo(offsetX, offsetY)
+  
     ctx.stroke()
     ctx.beginPath()
     ctx.moveTo(offsetX, offsetY)
@@ -34,36 +31,26 @@ const Canvas = () => {
     }
   }, [drawing, color, size, sendDrawing])
 
-  const handleReceiveDrawing = useCallback((data) => {
-    const ctx = ctxRef.current
-    if (!ctx) return
-    const { offsetX, offsetY, color, size } = data
-    ctx.lineWidth = size
-    ctx.lineCap = 'round'
-    ctx.strokeStyle = color
-    ctx.lineTo(offsetX, offsetY)
-    ctx.stroke()
-    ctx.beginPath()
-    ctx.moveTo(offsetX, offsetY)
+  useEffect(() => {
+    const canvas = canvasRef.current
+    ctxRef.current = canvas.getContext('2d')
   }, [])
 
+  // Only add mousemove listener when drawing
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
 
-    canvas.addEventListener('mousemove', draw)
-    if (socket) {
-      socket.on('receive-drawing', handleReceiveDrawing)
+    const handleMouseMove = (event) => draw(event);
+
+    if (drawing) {
+      canvas.addEventListener('mousemove', handleMouseMove)
     }
 
     return () => {
-      canvas.removeEventListener('mousemove', draw)
-      if (socket) {
-        socket.off('receive-drawing', handleReceiveDrawing)
-      }
+      canvas.removeEventListener('mousemove', handleMouseMove)
     }
-  }, [draw, handleReceiveDrawing, socket])
-
+  }, [drawing, draw])
   return (
     <div className="canvas1-container">
       <div className="canvas2-container">
@@ -73,6 +60,11 @@ const Canvas = () => {
           height={500}
           onMouseDown={() => setDrawing(true)}
           onMouseUp={() => {
+            setDrawing(false)
+            const ctx = ctxRef.current
+            if (ctx) ctx.beginPath()
+          }}
+          onMouseLeave={() => {
             setDrawing(false)
             const ctx = ctxRef.current
             if (ctx) ctx.beginPath()
@@ -88,15 +80,21 @@ const Canvas = () => {
             <label htmlFor="brushSize">Size:</label>
             <input type="range" id="brushSize" min="1" max="20" value={size} onChange={(e) => setSize(Number(e.target.value))} />
           </div>
-          <button className="clear" onClick={() => {
-            const canvas = canvasRef.current
-            const ctx = ctxRef.current
-            if (canvas && ctx) ctx.clearRect(0, 0, canvas.width, canvas.height)
-          }}>Clear</button>
+          <button
+            className="clear"
+            onClick={() => {
+              const canvas = canvasRef.current;
+              const ctx = ctxRef.current;
+              if (canvas && ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
+              clearCanvas({ roomCode });
+            }}
+          >
+            Clear
+          </button>
         </div>
       </div>
     </div>
   )
 }
 
-export default Canvas
+export default CreateCanvas
