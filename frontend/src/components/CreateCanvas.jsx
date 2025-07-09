@@ -8,9 +8,9 @@ const CreateCanvas = () => {
   const [drawing, setDrawing] = useState(false)
   const [color, setColor] = useState('#000000')
   const [size, setSize] = useState(4)
-  const { sendDrawing ,roomCode} = useContext(GameContext);
+  const { sendDrawing ,roomCode,clearCanvas} = useContext(GameContext);
 
-  // Define draw BEFORE useEffect that uses it!
+
   const draw = useCallback((event) => {
     if (!drawing) return
     const ctx = ctxRef.current
