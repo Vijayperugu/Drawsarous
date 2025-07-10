@@ -15,7 +15,7 @@ const App = () => {
     <>
       <Navbar />
       <Routes>
-        <Route path='/' element={authUser ? <Home /> : <Navigate to='/login' />} />
+        <Route path='/' element={authUser ? <Home /> : <Navigate to='/login' />} /> 
         <Route path='/createroom' element={authUser ? <Room /> : <Navigate to='/login' />} />
         <Route path='/login' element={!authUser ? <Login /> : <Navigate to='/' />} />
         <Route path='/signUp' element={!authUser ? <SignUp /> : <Navigate to='/' />} />

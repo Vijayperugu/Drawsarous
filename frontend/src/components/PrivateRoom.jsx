@@ -13,7 +13,10 @@ const PrivateRoom = ({ setGameState }) => {
   const { authUser, socket } = useContext(AuthContext)
   const navigate = useNavigate()
 
+  
+
  const handleJoin = async () => {
+
     if (!roomCode) return alert("Please enter the Room ID")
     if (!socket?.id) return alert("Socket not connected. Please try again.");
     try {

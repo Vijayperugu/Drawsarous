@@ -8,8 +8,7 @@ export const GameProvider = ({ children }) => {
   const [roomCode, setRoomCode] = useState(null)
   const [username, setUsername] = useState('')
   const [players, setPlayers] = useState([])
-  const { socket } = useContext(AuthContext)
-
+  const { socket, authUser } = useContext(AuthContext)
 
   useEffect(() => {
     if (!socket) return;
@@ -30,6 +29,9 @@ export const GameProvider = ({ children }) => {
       socket.emit('join-room', { roomCode, username })
       setRoomCode(roomCode)
       setUsername(username)
+      // When joining a room
+      localStorage.setItem('roomCode', roomCode);
+      localStorage.setItem('username', username);
     }
   }
   const clearCanvas = ({ roomCode }) => {
@@ -38,6 +40,12 @@ export const GameProvider = ({ children }) => {
     }
   }
 
+  const sendMessage = ({ roomCode,message,username }) => {
+    if (socket) {
+      socket.emit('send-message', { roomCode, message, username: authUser.name })
+    }
+  }
+  
   const sendDrawing = (data) => {
     socket.emit('send-drawing', { roomCode, drawing: data })
   }
@@ -48,7 +56,8 @@ export const GameProvider = ({ children }) => {
     joinRoomSocket,
     sendDrawing,
     socket,
-    clearCanvas
+    clearCanvas,
+    sendMessage
   }
 
   return (

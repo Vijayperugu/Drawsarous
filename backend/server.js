@@ -34,9 +34,12 @@ io.on("connection", (socket) => {
 });
 
   socket.on("send-drawing", ({ roomCode, drawing }) => {
-    socket.to(roomCode).emit("receive-drawing", drawing);
+    io.to(roomCode).emit("receive-drawing", drawing);
   });
-
+  socket.on("send-message", ({ roomCode, message, username }) => {
+    socket.to(roomCode).emit("receive-message", { message, username });
+  });
+  
   socket.on("disconnect", () => {
     console.log("User Disconnected", userId);
     delete userSocketMap[userId];

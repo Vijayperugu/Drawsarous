@@ -10,9 +10,9 @@ const JoinRoom = () => {
     <div className="joinRoom-container">
       <div className="item"><GuessingWord/></div>
 
-      <div className="items">
+      <div className="item">
         <JoinCanvas/></div>
-      <div className="items">
+      <div className="item">
         <Chat/>
       </div> 
     </div>

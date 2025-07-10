@@ -6,7 +6,7 @@
   grid-template-columns: 2fr 2fr 1fr;
   grid-template-rows: auto 1fr;
   gap: 20px;
-  width: 100vw;
+  width: 98w;
   min-height: 100vh;
   padding: 20px;
   box-sizing: border-box;
@@ -57,7 +57,7 @@
 }
 
 @media screen and (max-width: 600px) {
-  .joinRoom-container {
+  .ownerRoom-container {
     grid-template-areas:
       "header"
       "canvas"

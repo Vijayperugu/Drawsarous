@@ -14,27 +14,11 @@ const GuessingWord = () => {
     setCurrentWord(randomWord);
   }, []);
 
-  useEffect(() => {
-
-
-    const timer = setInterval(() => {
-      setTimeLeft(prev => prev - 1);
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [timeLeft]);
-
-  const formatTime = (seconds) => {
-    const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
-    const secs = (seconds % 60).toString().padStart(2, '0');
-    return `${mins}:${secs}`;
-  };
 
 
   return (
     <div className='guessing-word'>
       <h2>Word: {currentWord[0] + currentWord.slice(1, -1).replace(/[a-zA-Z]/g, "_ ") + currentWord[currentWord.length - 1]}</h2>
-      <h2>Timer: {formatTime(timeLeft)}</h2>
 
     </div>
   );

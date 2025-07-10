@@ -7,17 +7,124 @@
   padding: 20px;
   flex-direction: column;
   box-sizing: border-box;
+  font-family: "chewy", cursive;
 }
 .chat-container .chat-interface {
   width: 100%;
   height: 100%;
-  padding: 10px;
+  padding: 20px;
   box-sizing: border-box;
   border-radius: 10px;
   background-color: #f3d2c1;
-  box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
-  overflow-y: auto;
+  box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px,
+    rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  color: #001858;
 }
+.chatMessage-container {
+  margin-bottom: 10px;
+}
+.chat-box {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin-top: auto;
+  background-color: transparent;
+  position: sticky;
+  bottom: 0;
+}
+.chat-element {
+  width: 100%;
+  height: auto;
+  display: flex;
+  gap: 10px;
+}
+.ownerMessage-container {
+  width: 100%;
+  height: auto;
+  margin-bottom: 10px;
+}
+.ownerchat-element {
+  width: 100%;
+  height: auto;
+}
+.ownerchat-message-content {
+  width: 70%;
+  padding-right: 10px;
+  padding-bottom: 5px;
+  height: auto;
+  background-color: #8bd3dd;
+  text-align: right;
+  margin-left: 30%;
+  border-radius: 10px;
+}
+
+.user-avatar-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 10%;
+}
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.chat-message-content {
+  background-color: #8bd3dd;
+  width: 85%;
+  height: auto;
+  font-size: 1rem;
+  border-radius: 10px;
+  padding: 0 10px;
+  padding-bottom: 5px;
+}
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 5px;
+  margin-bottom: 10px;
+}
+.chat-messages::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+.chat-messages {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;  /* IE and Edge */
+}
+.chat-username {
+  font-size: 0.7rem;
+  color: gray;
+}
+
+.chat-input {
+  height: 40px;
+  width: 80%;
+  border: none;
+  outline: none;
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+  padding: 5px 10px;
+  font-size: 1rem;
+  font-family: "Luckiest Guy", cursive;
+}
+.send-button {
+  height: 40px;
+  border: none;
+  cursor: pointer;
+  padding: 10px;
+  font-size: 1rem;
+  font-family: "Luckiest Guy", cursive;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+  background-color: #f582ae;
+  color: #001858;
+}
+
 @media screen and (max-width: 1024px) {
   .chat-container {
     height: 300px;

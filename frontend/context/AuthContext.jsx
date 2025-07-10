@@ -96,6 +96,8 @@ export const AuthProvider = ({ children }) => {
 
 
     }
+    if(authUser) console.log("AuthUser:", authUser.name);
+
     return (
         <AuthContext.Provider value={value}>
             {children}

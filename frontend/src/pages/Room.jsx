@@ -1,12 +1,12 @@
 import Chat from '../components/Chat'
 import '../styles/ownerRoom.css'
-import GuessingWord from '../components/GuessingWord'
 import CreateCanvas from '../components/CreateCanvas'
+import RoomCode from '../components/RoomCode'
 
 const Room = () => {
   return (
     <div className="ownerRoom-container">
-      <div className="item"><GuessingWord/>
+      <div className="item"><RoomCode/>
 
       </div>
       <div className="item">
