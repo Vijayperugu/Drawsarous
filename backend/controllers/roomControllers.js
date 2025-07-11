@@ -76,3 +76,34 @@ export const roomActive = async (req, res) => {
   if (!room) return res.json({ active: false });
   res.json({ active: room.isActive });
 };
+
+export const addDrawing = async (req, res) => {
+  const { roomCode, drawing } = req.body;
+  const room = await RoomModal.findOne({ roomCode });
+  if (!room) {
+    return res.status(404).json({ success: false, message: "Room not found" });
+  }
+  room.drawings.push(drawing);
+  await room.save();
+  res.json({ success: true, message: "Drawing added successfully"});
+};
+  
+
+export const getDrawingHistory = async (req, res) => {
+  const { roomCode } = req.params;
+  const room = await RoomModal.findOne({ roomCode });
+  if (!room) return res.json({ history: [] });
+  res.json({ success: true, history: room.drawings });
+};
+
+
+export const clearDrawingHistory = async (req, res) => {
+  const { roomCode } = req.body;
+  const room = await RoomModal.findOne({ roomCode });
+  if (!room) {
+    return res.status(404).json({ success: false, message: "Room not found" });
+  }
+  room.drawings = [];
+  await room.save();
+  res.json({ success: true, message: "Drawing history cleared" });
+};

@@ -5,40 +5,70 @@ import { GameContext } from '../../context/GameContext.jsx'
 const JoinCanvas = () => {
   const canvasRef = useRef(null)
   const ctxRef = useRef(null)
-  const { socket ,clearCanvas,roomCode} = useContext(GameContext)
+  const { socket, clearCanvas, roomCode, historyDrawings } = useContext(GameContext)
 
   // Set up the canvas context
   useEffect(() => {
     const canvas = canvasRef.current
     ctxRef.current = canvas.getContext('2d')
   }, [])
+
+  // Restore drawing history when it changes
   useEffect(() => {
-  if (!socket) return;
-  const handleClear = () => {
-    const canvas = canvasRef.current;
-    const ctx = ctxRef.current;
-    if (canvas && ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
-  };
-  socket.on('clear-canvas', handleClear);
-  return () => {
-    socket.off('clear-canvas', handleClear);
-  };
-}, [socket]);
+  const ctx = ctxRef.current
+  const canvas = canvasRef.current
+  if (!ctx || !canvas || !historyDrawings || !Array.isArray(historyDrawings)) return
 
+  ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-  // Handle receiving drawing data from the owner
-  const handleReceiveDrawing = useCallback((data) => {
-    const ctx = ctxRef.current
-    if (!ctx) return
-    const { offsetX, offsetY, color, size } = data
+  historyDrawings.forEach(({ offsetX, offsetY, color, size, isNewStroke }) => {
     ctx.lineWidth = size
     ctx.lineCap = 'round'
     ctx.strokeStyle = color
-    ctx.lineTo(offsetX, offsetY)
-    ctx.stroke()
-    ctx.beginPath()
-    ctx.moveTo(offsetX, offsetY)
-  }, [])
+    if (isNewStroke) {
+      ctx.beginPath()
+      ctx.moveTo(offsetX, offsetY)
+    } else {
+      ctx.lineTo(offsetX, offsetY)
+      ctx.stroke()
+      ctx.beginPath()
+      ctx.moveTo(offsetX, offsetY)
+    }
+  })
+}, [historyDrawings])
+
+  // Handle clear-canvas event
+  useEffect(() => {
+    if (!socket) return
+    const handleClear = () => {
+      const canvas = canvasRef.current
+      const ctx = ctxRef.current
+      if (canvas && ctx) ctx.clearRect(0, 0, canvas.width, canvas.height)
+    }
+    socket.on('clear-canvas', handleClear)
+    return () => {
+      socket.off('clear-canvas', handleClear)
+    }
+  }, [socket])
+
+  // Handle receiving drawing data from the owner
+  const handleReceiveDrawing = useCallback((data) => {
+  const ctx = ctxRef.current;
+  if (!ctx) return;
+  const { offsetX, offsetY, color, size, isNewStroke } = data;
+  ctx.lineWidth = size;
+  ctx.lineCap = 'round';
+  ctx.strokeStyle = color;
+  if (isNewStroke) {
+    ctx.beginPath();
+    ctx.moveTo(offsetX, offsetY);
+  } else {
+    ctx.lineTo(offsetX, offsetY);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(offsetX, offsetY);
+  }
+}, []);
 
   // Listen for receive-drawing socket event
   useEffect(() => {

@@ -8,9 +8,10 @@ const CreateCanvas = () => {
   const [drawing, setDrawing] = useState(false)
   const [color, setColor] = useState('#000000')
   const [size, setSize] = useState(4)
-  const { sendDrawing ,roomCode,clearCanvas} = useContext(GameContext);
+  const { sendDrawing, roomCode, clearCanvas, clearDrawingHistory, historyDrawings } = useContext(GameContext)
+  const [isNewStroke, setIsNewStroke] = useState(false)
 
-
+  // Draw function
   const draw = useCallback((event) => {
     if (!drawing) return
     const ctx = ctxRef.current
@@ -21,15 +22,61 @@ const CreateCanvas = () => {
     ctx.lineCap = 'round'
     ctx.strokeStyle = color
     ctx.lineTo(offsetX, offsetY)
-  
     ctx.stroke()
     ctx.beginPath()
     ctx.moveTo(offsetX, offsetY)
 
     if (sendDrawing) {
-      sendDrawing({ offsetX, offsetY, color, size })
+      sendDrawing(
+        { offsetX, offsetY, color, size, isNewStroke },
+        roomCode
+      )
+      if (isNewStroke) setIsNewStroke(false)
     }
-  }, [drawing, color, size, sendDrawing])
+  }, [drawing, color, size, sendDrawing, isNewStroke, roomCode])
+
+  // On mouse down, start a new stroke
+  const handleMouseDown = (event) => {
+    setDrawing(true)
+    setIsNewStroke(true)
+    // Send the first point as a new stroke
+    if (sendDrawing) {
+      const { offsetX, offsetY } = event.nativeEvent
+      sendDrawing(
+        { offsetX, offsetY, color, size, isNewStroke: true },
+        roomCode
+      )
+      setIsNewStroke(false)
+    }
+    const ctx = ctxRef.current
+    if (ctx) {
+      ctx.beginPath()
+      ctx.moveTo(event.nativeEvent.offsetX, event.nativeEvent.offsetY)
+    }
+  }
+
+  useEffect(() => {
+    const ctx = ctxRef.current
+    const canvas = canvasRef.current
+    if (!ctx || !canvas || !historyDrawings || !Array.isArray(historyDrawings)) return
+  
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+  
+    historyDrawings.forEach(({ offsetX, offsetY, color, size, isNewStroke }) => {
+      ctx.lineWidth = size
+      ctx.lineCap = 'round'
+      ctx.strokeStyle = color
+      if (isNewStroke) {
+        ctx.beginPath()
+        ctx.moveTo(offsetX, offsetY)
+      } else {
+        ctx.lineTo(offsetX, offsetY)
+        ctx.stroke()
+        ctx.beginPath()
+        ctx.moveTo(offsetX, offsetY)
+      }
+    })
+  }, [historyDrawings])
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -41,7 +88,7 @@ const CreateCanvas = () => {
     const canvas = canvasRef.current
     if (!canvas) return
 
-    const handleMouseMove = (event) => draw(event);
+    const handleMouseMove = (event) => draw(event)
 
     if (drawing) {
       canvas.addEventListener('mousemove', handleMouseMove)
@@ -51,6 +98,7 @@ const CreateCanvas = () => {
       canvas.removeEventListener('mousemove', handleMouseMove)
     }
   }, [drawing, draw])
+
   return (
     <div className="canvas1-container">
       <div className="canvas2-container">
@@ -58,7 +106,7 @@ const CreateCanvas = () => {
           ref={canvasRef}
           width={800}
           height={500}
-          onMouseDown={() => setDrawing(true)}
+          onMouseDown={handleMouseDown}
           onMouseUp={() => {
             setDrawing(false)
             const ctx = ctxRef.current
@@ -83,10 +131,11 @@ const CreateCanvas = () => {
           <button
             className="clear"
             onClick={() => {
-              const canvas = canvasRef.current;
-              const ctx = ctxRef.current;
-              if (canvas && ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
-              clearCanvas({ roomCode });
+              const canvas = canvasRef.current
+              const ctx = ctxRef.current
+              if (canvas && ctx) ctx.clearRect(0, 0, canvas.width, canvas.height)
+              clearCanvas({ roomCode })
+              clearDrawingHistory(roomCode)
             }}
           >
             Clear

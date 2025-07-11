@@ -10,6 +10,7 @@ export const GameProvider = ({ children }) => {
   const [roomCode, setRoomCode] = useState(null)
   const [username, setUsername] = useState('')
   const [players, setPlayers] = useState([])
+  const [historyDrawings, setHistoryDrawings] = useState([]);
   const { socket, authUser } = useContext(AuthContext)
   const navigate = useNavigate();
 
@@ -27,23 +28,48 @@ export const GameProvider = ({ children }) => {
     }
   }, [socket])
   useEffect(() => {
-    const checkRoomActive = async () => {
-        const savedRoom = localStorage.getItem('roomCode');
-        const hostUser = localStorage.getItem('hostName') || '';
-        if (savedRoom && (hostUser !== authUser.name)) {
-            try {
-                const { data } = await axios.get(`http://localhost:8000/api/user/roomActive/${savedRoom}`);
-                if (data.active) {
-                    joinRoomSocket({ roomCode: savedRoom, username: authUser.name });
-                    navigate('/joinRoom');
-                }
-            } catch (error) {
-                console.error("Error checking room active status:", error);
-            }
+  const checkRoomActive = async () => {
+    const savedRoom = localStorage.getItem('roomCode');
+    const host = localStorage.getItem('hostName');
+    if (authUser && socket && savedRoom && host !== authUser.name) {
+      try {
+        // Check if room is active
+        const { data } = await axios.get(`http://localhost:8000/api/user/roomActive/${savedRoom}`);
+        if (data.active) {
+          // Fetch drawing history
+          const drawingRes = await axios.get(`http://localhost:8000/api/user/getDrawingHistory/${savedRoom}`);
+          if (drawingRes.data &&  drawingRes.data.success) {
+            setHistoryDrawings(drawingRes.data.history);
+          } else {
+            setHistoryDrawings([]);
+          }
+          joinRoomSocket({ roomCode: savedRoom, username: authUser.name });
+          navigate('/joinRoom');
         }
-    };
-    checkRoomActive();
-}, [authUser,socket]);
+      } catch (error) {
+        console.error("Error checking room active status or fetching drawing history:", error);
+      }
+    }else if (authUser && socket && savedRoom && host === authUser.name) {
+      const { data } = await axios.get(`http://localhost:8000/api/user/roomActive/${savedRoom}`);
+        if (data.active) {
+          // Fetch drawing history
+          const drawingRes = await axios.get(`http://localhost:8000/api/user/getDrawingHistory/${savedRoom}`);
+          if (drawingRes.data &&  drawingRes.data.success) {
+            setHistoryDrawings(drawingRes.data.history);
+          } else {
+            setHistoryDrawings([]);
+          }
+          joinRoomSocket({ roomCode: savedRoom, username: authUser.name });
+        }
+        navigate('/createRoom');
+      
+    } else {
+      // If no room is active, redirect to home
+      navigate('/');
+    }
+  };
+  checkRoomActive();
+}, [authUser, socket]);
 
   const joinRoomSocket = ({ roomCode, username }) => {
     if (socket) {
@@ -64,10 +90,29 @@ export const GameProvider = ({ children }) => {
       socket.emit('send-message', { roomCode, message, username: authUser.name })
     }
   }
-  
-  const sendDrawing = (data) => {
+
+  const sendDrawing = (data, roomCode) => {
     socket.emit('send-drawing', { roomCode, drawing: data })
+    const {res} = axios.post('http://localhost:8000/api/user/addDrawing', {
+      roomCode,
+      drawing: data
+    })
+    if(data.success) {
+      setHistoryDrawings(prev => [...prev, data.drawing])
+    }
   }
+
+  const clearDrawingHistory = async (roomCode) => {
+    try {
+      const { data } = await axios.post('http://localhost:8000/api/user/clearDrawingHistory', { roomCode });
+      if (data.success) {
+        setHistoryDrawings([]);
+      }
+    } catch (error) {
+      console.error("Error clearing drawing history:", error);
+    }
+  }
+
   const value = {
     roomCode,
     username,
@@ -76,9 +121,11 @@ export const GameProvider = ({ children }) => {
     sendDrawing,
     socket,
     clearCanvas,
-    sendMessage
+    sendMessage,
+    historyDrawings,
+    clearDrawingHistory
   }
-
+  
   return (
 
     <GameContext.Provider value={value}>

@@ -22,6 +22,10 @@ const RoomSchems = new mongoose.Schema({
         type:String,
         default:""
     },
+    drawings: {
+        type: [Object],
+        default: []
+    },
     isActive:{
         type:Boolean,
         default:true
