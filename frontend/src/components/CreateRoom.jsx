@@ -19,7 +19,8 @@ const CreateRoom = ({ setGameState }) => {
         socketId: authUser._id
       })
       const { roomCode } = response.data
-      joinRoomSocket({ roomCode, username: authUser.name })
+      // const { roomName } = response.data
+      joinRoomSocket({ roomCode, username: authUser.name, })
       localStorage.setItem('hostName', authUser.name);
       navigate('/createroom')
     } catch (err) {

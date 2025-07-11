@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 export const GameContext = createContext()
 
 export const GameProvider = ({ children }) => {
+  const [roomName, setRoomName] = useState('')
   const [roomCode, setRoomCode] = useState(null)
   const [username, setUsername] = useState('')
   const [players, setPlayers] = useState([])
@@ -35,8 +36,9 @@ export const GameProvider = ({ children }) => {
       try {
         // Check if room is active
         const { data } = await axios.get(`http://localhost:8000/api/user/roomActive/${savedRoom}`);
+
         if (data.active) {
-          // Fetch drawing history
+          setRoomName(data.roomName);
           const drawingRes = await axios.get(`http://localhost:8000/api/user/getDrawingHistory/${savedRoom}`);
           if (drawingRes.data &&  drawingRes.data.success) {
             setHistoryDrawings(drawingRes.data.history);
@@ -52,7 +54,7 @@ export const GameProvider = ({ children }) => {
     }else if (authUser && socket && savedRoom && host === authUser.name) {
       const { data } = await axios.get(`http://localhost:8000/api/user/roomActive/${savedRoom}`);
         if (data.active) {
-          // Fetch drawing history
+          setRoomName(data.roomName);
           const drawingRes = await axios.get(`http://localhost:8000/api/user/getDrawingHistory/${savedRoom}`);
           if (drawingRes.data &&  drawingRes.data.success) {
             setHistoryDrawings(drawingRes.data.history);
@@ -64,7 +66,7 @@ export const GameProvider = ({ children }) => {
         navigate('/createRoom');
       
     } else {
-      // If no room is active, redirect to home
+
       navigate('/');
     }
   };
@@ -123,7 +125,8 @@ export const GameProvider = ({ children }) => {
     clearCanvas,
     sendMessage,
     historyDrawings,
-    clearDrawingHistory
+    clearDrawingHistory,
+    roomName
   }
   
   return (

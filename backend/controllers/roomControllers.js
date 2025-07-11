@@ -28,6 +28,7 @@ export const createRoom = async (req, res) => {
     res.json({
       success: true,
       roomCode,
+      roomName: newRoom.roomName,
     });
   } catch (error) {
     console.error(error);
@@ -38,7 +39,7 @@ export const joinRoom = async (req, res) => {
   const userName = req.user.name;
   const { roomCode, socketId } = req.body;
   const room = await RoomModal.findOne({ roomCode });
-  console.log(room);
+  // console.log(room);
 
   if (!room || !room.isActive) {
     return res.status(404).json({ success: false, message: "Room not found" });
@@ -74,7 +75,7 @@ export const roomActive = async (req, res) => {
   const { roomCode } = req.params;
   const room = await RoomModal.findOne({ roomCode });
   if (!room) return res.json({ active: false });
-  res.json({ active: room.isActive });
+  res.json({ active: room.isActive, roomName: room.roomName });
 };
 
 export const addDrawing = async (req, res) => {
