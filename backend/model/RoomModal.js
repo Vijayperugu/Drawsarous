@@ -6,6 +6,10 @@ const RoomSchems = new mongoose.Schema({
         required:true,
         unique:true
     },
+    roomName:{
+        type:String,
+        default:""
+    },
     host:{
         type:String,
         required:true
@@ -16,10 +20,7 @@ const RoomSchems = new mongoose.Schema({
     }],
     guessingWord:{
         type:String,
-        default:"Apple"
-    },
-    drawingData:{
-        type:Array,default:[]
+        default:""
     },
     isActive:{
         type:Boolean,

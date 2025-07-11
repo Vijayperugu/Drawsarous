@@ -16,10 +16,11 @@ const CreateRoom = ({ setGameState }) => {
     if (!socket?.id) return alert("Socket not connected. Please try again.");
     try {
       const response = await axios.post("http://localhost:8000/api/user/createRoom", {
-        socketId: socket.id
+        socketId: authUser._id
       })
       const { roomCode } = response.data
       joinRoomSocket({ roomCode, username: authUser.name })
+      localStorage.setItem('hostName', authUser.name);
       navigate('/createroom')
     } catch (err) {
       alert("Error creating room")

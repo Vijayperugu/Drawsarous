@@ -20,19 +20,18 @@ const PrivateRoom = ({ setGameState }) => {
     if (!roomCode) return alert("Please enter the Room ID")
     if (!socket?.id) return alert("Socket not connected. Please try again.");
     try {
-      await axios.post("http://localhost:8000/api/user/joinRoom", {
+      const { data } = await axios.post("http://localhost:8000/api/user/joinRoom", {
         roomCode,
-        socketId: socket.id
+        socketId: authUser._id
       })
-      joinRoomSocket({ roomCode, username: authUser?.name })
-      navigate("/joinRoom")
+      if (!data.success) {
+        return alert(data.message || "Failed to join room")
+      } else {
+        joinRoomSocket({ roomCode, username: authUser?.name })
+        navigate("/joinRoom")
+      }
     } catch (err) {
       console.log(err.response);
-      if (err.response && err.response.data && err.response.data.msg) {
-        alert(err.response.data.msg)
-      } else {
-        alert("Room not found or error joining")
-      }
     }
   }
 
