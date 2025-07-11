@@ -2,6 +2,7 @@ import React, { useEffect, useState, useContext } from 'react'
 import '../styles/Chat.css'
 import { GameContext } from '../../context/GameContext';
 import { AuthContext } from '../../context/AuthContext.jsx';
+import profilrPic from '../assets/profile.png'
 
 const Chat = () => {
   const { sendMessage, roomCode, socket } = useContext(GameContext);
@@ -47,7 +48,7 @@ const Chat = () => {
                 <div className="ownerchat-element">
                   <div className='ownerchat-message-content'>
                     <span className='chat-username'>Me</span>
-                    <p className='owner chat-text'>{msg.message}</p>
+                    <p className='owner-chat-text'>{msg.message}</p>
                   </div>
                 </div>
               </div>
@@ -58,7 +59,7 @@ const Chat = () => {
                     <div className='user-avatar-container'>
                       <img
                         className="user-avatar"
-                        src="https://imgs.search.brave.com/bWNFz9pFC1Ul5pZ7ql6Z9qc1cTlkBrZbXMdCTkoMqeY/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pbWcu/ZnJlZXBpay5jb20v..."
+                        src={profilrPic}
                         alt=""
                       />
                     </div>
