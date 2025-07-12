@@ -8,7 +8,7 @@ import { AuthContext } from '../../context/AuthContext.jsx'
 import { useNavigate } from 'react-router-dom'
 
 const CreateRoom = ({ setGameState }) => {
-  const { joinRoomSocket } = useContext(GameContext)
+  const { joinRoomSocket,setRoomName,setRoomCode,setGuessingWord } = useContext(GameContext)
   const { authUser, socket } = useContext(AuthContext)
   const navigate = useNavigate();
 
@@ -18,10 +18,12 @@ const CreateRoom = ({ setGameState }) => {
       const response = await axios.post("http://localhost:8000/api/user/createRoom", {
         socketId: authUser._id
       })
-      const { roomCode } = response.data
-      // const { roomName } = response.data
+      const { roomCode, roomName, guessingWord } = response.data
       joinRoomSocket({ roomCode, username: authUser.name, })
       localStorage.setItem('hostName', authUser.name);
+      setRoomCode(roomCode);
+      setRoomName(roomName);
+      setGuessingWord(guessingWord);
       navigate('/createroom')
     } catch (err) {
       alert("Error creating room")

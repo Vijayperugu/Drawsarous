@@ -1,17 +1,28 @@
-.guessing-word{
-    width: 100%;
-    height: 7.3vh;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    padding: 0px 20px;
-    color: #001858;
+.guessing-word {
+  width: 100%;
+  height: 7.3vh;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0px 20px;
+  color: #001858;
+  font-family: "Luckiest Guy", cursive;
+}
+.leave-button {
+  height: 40px;
+  border: none;
+  cursor: pointer;
+  padding: 10px;
+  font-size: 1rem;
+  font-family: "Luckiest Guy", cursive;
+  background-color: #f582ae;
+  border-radius: 10px;
 }
 @media screen and (max-width: 768px) {
-    .guessing-word{
-        width: 100%;
-        height: 10vh;
-        padding: 0px 10px;
-        font-size: 1rem;
-    }
+  .guessing-word {
+    width: 100%;
+    height: 10vh;
+    padding: 0px 10px;
+    font-size: 1rem;
+  }
 }

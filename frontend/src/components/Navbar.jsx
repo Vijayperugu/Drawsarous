@@ -49,11 +49,11 @@ const Navbar = ({ owner }) => {
         {showDropdown && (
           <div className="dropdown-wrapper" ref={dropdownRef}>
             <div className="dropdown-card">
-              <h3>{authUser.name || "Guest User"}</h3>
+              <h3>{authUser?.name || "Guest User"}</h3>
               <ul>
                 <li>My Profile</li>
                 <li>Settings</li>
-                <li onClick={logout}>Log Out</li>
+                {authUser ? <li onClick={logout}>Log Out</li> : <li>Log In</li>}
               </ul>
             </div>
           </div>

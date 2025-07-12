@@ -9,7 +9,7 @@ import "../styles/PrivateRoom.css"
 
 const PrivateRoom = ({ setGameState }) => {
   const [roomCode, setRoomCode] = useState("")
-  const { joinRoomSocket } = useContext(GameContext)
+  const { joinRoomSocket,setGuessingWord ,setRoomName} = useContext(GameContext)
   const { authUser, socket } = useContext(AuthContext)
   const navigate = useNavigate()
 
@@ -28,6 +28,9 @@ const PrivateRoom = ({ setGameState }) => {
         return alert(data.message || "Failed to join room")
       } else {
         joinRoomSocket({ roomCode, username: authUser?.name })
+        setRoomName(data.roomName);
+        setGuessingWord(data.guessingWord);
+        localStorage.setItem('roomCode', roomCode);
         navigate("/joinRoom")
       }
     } catch (err) {

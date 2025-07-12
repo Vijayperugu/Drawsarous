@@ -1,6 +1,8 @@
 import RoomModal from "../model/RoomModal.js";
+import words from "../utils/Words.js";
 import { customAlphabet } from "nanoid";
 const nanoid = customAlphabet("1234567890", 4);
+const num = customAlphabet("1234567890", 1);
 
 export const createRoom = async (req, res) => {
   try {
@@ -12,6 +14,7 @@ export const createRoom = async (req, res) => {
       });
     }
     const roomCode = nanoid();
+    const index = parseInt(num());
     const newRoom = new RoomModal({
       roomCode,
       host: userName,
@@ -20,8 +23,9 @@ export const createRoom = async (req, res) => {
         {
           userName,
           socketId: req.body.socketId,
-        },
+        }
       ],
+      guessingWord: words[index],
     });
 
     await newRoom.save();
@@ -29,6 +33,8 @@ export const createRoom = async (req, res) => {
       success: true,
       roomCode,
       roomName: newRoom.roomName,
+      guessingWord: newRoom.guessingWord,
+      message: "Room Created Successfully",
     });
   } catch (error) {
     console.error(error);
@@ -62,6 +68,9 @@ export const joinRoom = async (req, res) => {
       res.json({
         success: true,
         message: "Joined Room Successfully",
+        guessingWord: room.guessingWord,
+        roomName: room.roomName,
+
       });
     } 
   }
@@ -75,7 +84,7 @@ export const roomActive = async (req, res) => {
   const { roomCode } = req.params;
   const room = await RoomModal.findOne({ roomCode });
   if (!room) return res.json({ active: false });
-  res.json({ active: room.isActive, roomName: room.roomName });
+  res.json({ active: room.isActive, roomName: room.roomName, guessingWord: room.guessingWord });
 };
 
 export const addDrawing = async (req, res) => {
@@ -108,3 +117,14 @@ export const clearDrawingHistory = async (req, res) => {
   await room.save();
   res.json({ success: true, message: "Drawing history cleared" });
 };
+
+export const deleteRoom = async (req,res)=>{
+  const {roomCode}=req.params;
+  const room = await RoomModal.findOne({roomCode});
+
+  if(!room){
+    return res.json({success:false,message:"Room not found"});
+  }
+  await RoomModal.deleteOne({roomCode});
+  res.json({success:true,message:"Room  Exited Successfully"}); 
+}

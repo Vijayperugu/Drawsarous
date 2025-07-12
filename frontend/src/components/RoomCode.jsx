@@ -3,13 +3,19 @@ import '../styles/GuessWord.css'
 import { GameContext } from '../../context/GameContext';
 
 const RoomCode = () => {
-  const { roomCode } = useContext(GameContext);
-  const currentWord = "APPLE"
+  const { roomCode, guessingWord, deleteRoom } = useContext(GameContext);
+  const handleClick = ()=>{
+    if(roomCode){
+      deleteRoom(roomCode);
+      localStorage.removeItem('roomCode');
+      localStorage.removeItem('hostName');
+    }
+  }
   return (
     <div className='guessing-word'>
-      <h2>Word: {currentWord}</h2>
+      <h2>Word: {guessingWord || "No Word Available"}</h2>
       <h2>Room Code :{roomCode || "No Room Code Available"}</h2>
-
+      <button className='leave-button' onClick={handleClick}>Exit</button>
     </div>
   );
 }

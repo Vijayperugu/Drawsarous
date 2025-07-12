@@ -1,5 +1,6 @@
 import axios from "axios";
 import { createContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { io } from 'socket.io-client';
 
 export const AuthContext = createContext();
@@ -10,6 +11,7 @@ export const AuthProvider = ({ children }) => {
     const [onlineUser, setOnlineUser] = useState([]);
     const [socket, setSocket] = useState(null);
     const [errorMessage,setErrorMessage]=useState('');
+    const navigate = useNavigate();
     useEffect(() => {
         if (token) {
         axios.defaults.headers.common["token"] = token;
@@ -83,6 +85,8 @@ export const AuthProvider = ({ children }) => {
         setOnlineUser([]);
         axios.defaults.headers.common["token"] = null;
         socket.disconnect()
+        navigate("/login");
+
     }
 
 
