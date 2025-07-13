@@ -59,9 +59,9 @@ const CreateCanvas = () => {
     const ctx = ctxRef.current
     const canvas = canvasRef.current
     if (!ctx || !canvas || !historyDrawings || !Array.isArray(historyDrawings)) return
-  
+
     ctx.clearRect(0, 0, canvas.width, canvas.height)
-  
+
     historyDrawings.forEach(({ offsetX, offsetY, color, size, isNewStroke }) => {
       ctx.lineWidth = size
       ctx.lineCap = 'round'
@@ -117,7 +117,7 @@ const CreateCanvas = () => {
             const ctx = ctxRef.current
             if (ctx) ctx.beginPath()
           }}
-          style={{ backgroundColor: 'white' }}
+          style={{ backgroundColor: 'white', cursor: 'crosshair' }}
         />
         <div className="controls">
           <div>

@@ -6,7 +6,7 @@
   grid-template-columns: 2fr 2fr 1fr;
   grid-template-rows: auto 1fr;
   gap: 20px;
-  width: 98w;
+  width: 98vw; /* fixed typo here */
   min-height: 100vh;
   padding: 20px;
   box-sizing: border-box;
@@ -19,6 +19,28 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.open-chat-button {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #f582ae;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.chat-boxx {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.logo-gap {
+  display: flex;
+  gap: 10px;
+  justify-content: space-around;
 }
 
 .item:nth-child(2) {
@@ -37,7 +59,56 @@
   height: 100%;
   overflow: hidden;
 }
+.pop-up {
+  width: 300px;
+  height: 150px;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #8bd3dd;
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.correct{
+  text-align: center;
+  font-size: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: "chewy", cursive;
+}
+.correct h3 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  width: 40px;
+  background-color: #f582ae;
+  border-radius: 50%;
+}
+.correct h2{
+  font-size: 1.5rem;
+  font-family: "chewy", cursive ;
+}
+.guess-again{
+  background-color: #f582ae;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-family: "chewy", cursive;
+}
 
+/* Tablets and below */
 @media screen and (max-width: 1024px) {
   .joinRoom-container {
     grid-template-areas:
@@ -45,35 +116,49 @@
       "canvas"
       "chat";
     grid-template-columns: 1fr;
-    grid-template-rows: auto 1fr 1fr;
-    gap: 16px;
-    padding: 10px;
+    grid-template-rows: auto auto 1fr;
   }
+
   .item:nth-child(3) {
     min-width: unset;
     max-width: unset;
-    height: 300px;
+    height: auto;
+  }
+
+  .chat-image {
+    display: none; /* hide image on tablets and below */
   }
 }
 
-@media screen and (max-width: 600px) {
-  .ownerRoom-container {
+/* Mobile devices */
+@media screen and (max-width: 500px) {
+  .joinRoom-container {
     grid-template-areas:
       "header"
       "canvas"
       "chat";
     grid-template-columns: 1fr;
-    grid-template-rows: auto 1fr 1fr;
-    gap: 10px;
+    grid-template-rows: 0.3fr 0.3fr 0.5fr;
     padding: 5px;
+    gap: 30px;
   }
+
   .item {
     width: 100% !important;
     min-width: 0 !important;
     max-width: 100% !important;
   }
+
   .item:nth-child(3) {
     height: 300px;
   }
+  .item:nth-child(2) {
+    height: 300px;
+  }.item:nth-child(1) {
+    height: 60px;
+  }
 
+  .chat-image {
+    display: none; /* hide image on mobile */
+  }
 }

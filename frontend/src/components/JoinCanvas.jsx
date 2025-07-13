@@ -1,11 +1,17 @@
-import React, { useRef, useEffect, useContext, useCallback } from 'react'
+import React, { useRef, useEffect, useContext, useCallback, useState } from 'react'
 import '../styles/Canvas.css'
 import { GameContext } from '../../context/GameContext.jsx'
+import { IoSend } from "react-icons/io5";
+import { TiTick } from "react-icons/ti";
+import { FaXmark } from "react-icons/fa6";
 
 const JoinCanvas = () => {
   const canvasRef = useRef(null)
   const ctxRef = useRef(null)
-  const { socket, clearCanvas, roomCode, historyDrawings } = useContext(GameContext)
+  const [guessedWord, setGuessedWord] = useState('')
+  const [popUpVisible, setPopUpVisible] = useState(false)
+  const [guessChatVisible, setGuessChatVisible] = useState(true)
+  const { socket, clearCanvas, roomCode, historyDrawings, guessingWord } = useContext(GameContext)
 
   // Set up the canvas context
   useEffect(() => {
@@ -15,27 +21,27 @@ const JoinCanvas = () => {
 
   // Restore drawing history when it changes
   useEffect(() => {
-  const ctx = ctxRef.current
-  const canvas = canvasRef.current
-  if (!ctx || !canvas || !historyDrawings || !Array.isArray(historyDrawings)) return
+    const ctx = ctxRef.current
+    const canvas = canvasRef.current
+    if (!ctx || !canvas || !historyDrawings || !Array.isArray(historyDrawings)) return
 
-  ctx.clearRect(0, 0, canvas.width, canvas.height)
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-  historyDrawings.forEach(({ offsetX, offsetY, color, size, isNewStroke }) => {
-    ctx.lineWidth = size
-    ctx.lineCap = 'round'
-    ctx.strokeStyle = color
-    if (isNewStroke) {
-      ctx.beginPath()
-      ctx.moveTo(offsetX, offsetY)
-    } else {
-      ctx.lineTo(offsetX, offsetY)
-      ctx.stroke()
-      ctx.beginPath()
-      ctx.moveTo(offsetX, offsetY)
-    }
-  })
-}, [historyDrawings])
+    historyDrawings.forEach(({ offsetX, offsetY, color, size, isNewStroke }) => {
+      ctx.lineWidth = size
+      ctx.lineCap = 'round'
+      ctx.strokeStyle = color
+      if (isNewStroke) {
+        ctx.beginPath()
+        ctx.moveTo(offsetX, offsetY)
+      } else {
+        ctx.lineTo(offsetX, offsetY)
+        ctx.stroke()
+        ctx.beginPath()
+        ctx.moveTo(offsetX, offsetY)
+      }
+    })
+  }, [historyDrawings])
 
   // Handle clear-canvas event
   useEffect(() => {
@@ -53,22 +59,22 @@ const JoinCanvas = () => {
 
   // Handle receiving drawing data from the owner
   const handleReceiveDrawing = useCallback((data) => {
-  const ctx = ctxRef.current;
-  if (!ctx) return;
-  const { offsetX, offsetY, color, size, isNewStroke } = data;
-  ctx.lineWidth = size;
-  ctx.lineCap = 'round';
-  ctx.strokeStyle = color;
-  if (isNewStroke) {
-    ctx.beginPath();
-    ctx.moveTo(offsetX, offsetY);
-  } else {
-    ctx.lineTo(offsetX, offsetY);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(offsetX, offsetY);
-  }
-}, []);
+    const ctx = ctxRef.current;
+    if (!ctx) return;
+    const { offsetX, offsetY, color, size, isNewStroke } = data;
+    ctx.lineWidth = size;
+    ctx.lineCap = 'round';
+    ctx.strokeStyle = color;
+    if (isNewStroke) {
+      ctx.beginPath();
+      ctx.moveTo(offsetX, offsetY);
+    } else {
+      ctx.lineTo(offsetX, offsetY);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(offsetX, offsetY);
+    }
+  }, []);
 
   // Listen for receive-drawing socket event
   useEffect(() => {
@@ -79,16 +85,54 @@ const JoinCanvas = () => {
     }
   }, [socket, handleReceiveDrawing])
 
+  const handleGuessSubmit = (e) => {
+    e.preventDefault()
+    if (guessedWord.trim() === '') {
+      alert('Please enter a guess');
+      return;
+    }
+    setPopUpVisible(true);
+    setGuessChatVisible(false);
+  }
+
   return (
     <div className="canvas1-container">
       <div className="canvas2-container">
         <canvas
           ref={canvasRef}
           width={800}
-          height={500}
+          height={600}
           style={{ backgroundColor: 'white', cursor: 'not-allowed' }}
         />
+        {guessChatVisible && (
+          <div className="guess-controls">
+            <form onSubmit={handleGuessSubmit} >
+              <input type="text" className='guess-input' placeholder='Guess The Word' value={guessedWord} onChange={(e) => setGuessedWord(e.target.value)} />
+              <button className='guess-button'><IoSend /></button>
+            </form>
+          </div>
+        )}
       </div>
+
+      {popUpVisible && (
+        <div className='pop-up'>
+          <div>
+            {guessedWord === guessingWord ?
+              <div className='correct'><h3><TiTick /></h3>
+                <h2>Correct</h2></div> :
+              <div className='correct'>
+                <h3 ><FaXmark /></h3>
+                <h2>InCorrect</h2>
+                <button className='guess-again' onClick={() => {
+                  setPopUpVisible(false)
+                  setGuessChatVisible(true)
+                  setGuessedWord('')
+                }}>Guess Again</button>
+              </div>
+            }
+          </div>
+        </div>
+      )}
     </div>
   )
 }

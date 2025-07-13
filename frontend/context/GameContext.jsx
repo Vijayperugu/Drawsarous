@@ -12,9 +12,24 @@ export const GameProvider = ({ children }) => {
   const [username, setUsername] = useState('')
   const [players, setPlayers] = useState([])
   const [historyDrawings, setHistoryDrawings] = useState([]);
+  const [historyMessages, setHistoryMessages] = useState([]);
   const [guessingWord, setGuessingWord] = useState('');
   const { socket, authUser } = useContext(AuthContext)
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const msgHistory = async () => {
+      if (roomCode) {
+        const res = await axios.get(`http://localhost:8000/api/user/getMessageHistory/${roomCode}`);
+        if (res.data && res.data.success) {
+          setHistoryMessages(res.data.history);
+        } else {
+          setHistoryDrawings([]);
+        }
+      }
+    }
+    msgHistory();
+  }, [roomCode]);
 
   useEffect(() => {
     if (!socket) return;
@@ -92,9 +107,16 @@ export const GameProvider = ({ children }) => {
     }
   }
 
-  const sendMessage = ({ roomCode, message, username }) => {
+  const sendMessage = async ({ roomCode, message, username }) => {
     if (socket) {
       socket.emit('send-message', { roomCode, message, username: authUser.name })
+    }
+    const res = await axios.post('http://localhost:8000/api/user/addMessages', {
+      roomCode,
+      message: { message, username: authUser.name }
+    });
+    if (res.data.success) {
+      setHistoryMessages(prev => [...prev, { message, username: authUser.name }]);
     }
   }
 
@@ -150,7 +172,9 @@ export const GameProvider = ({ children }) => {
     setGuessingWord,
     setRoomName,
     setRoomCode,
-    deleteRoom
+    deleteRoom,
+    historyMessages,
+    setHistoryMessages,
   }
 
   return (

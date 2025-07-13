@@ -97,7 +97,32 @@ export const addDrawing = async (req, res) => {
   await room.save();
   res.json({ success: true, message: "Drawing added successfully"});
 };
+
+export const addMessages = async (req, res) => {
+  const { roomCode, message } = req.body;
+  const room = await RoomModal.findOne({ roomCode });
+  if (!room) {
+    return res.status(404).json({ success: false, message: "Room not found" });
+  }
+  room.historyMessages.push(message);
+  await room.save();
+  res.json({ success: true, message: "Message added successfully"});
+};
+
+export const getMessages = async (req,res)=>{
+ try {
+   const { roomCode } = req.params;
+
+  const  room = await RoomModal.findOne({ roomCode });
+  if(!room) return res.json({historyMessages:[]});
+  return res.json({success:true ,history:room.historyMessages})
   
+  
+ } catch (error) {
+  console.error("Error fetching message history:", error);
+  res.status(500).json({ success: false, message: "Internal Server Error" });
+ }
+}
 
 export const getDrawingHistory = async (req, res) => {
   const { roomCode } = req.params;

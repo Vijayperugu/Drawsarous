@@ -22,6 +22,10 @@ const RoomSchems = new mongoose.Schema({
         type:String,
         default:""
     },
+    historyMessages:{
+        type:[Object],
+        default:[]
+    },
     drawings: {
         type: [Object],
         default: []

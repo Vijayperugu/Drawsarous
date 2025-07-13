@@ -1,75 +1,175 @@
 .canvas1-container {
-    width: 100%;
-    height: 85vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  width: 100%;
+  height: 85vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  padding: 10px;
 }
+
 .canvas2-container {
+  width: 100%;
+  max-width: 900px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.canvas1-container canvas {
+  width: 100%;
+  height: auto;
+  max-height: 500px;
+  background-color: white;
+  cursor: not-allowed;
+  border-radius: 12px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.canvas1-container .controls {
+  font-family: "Luckiest Guy", cursive;
+  font-size: 1.2rem;
+  color: #001858;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 800px;
+  padding: 10px;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.canvas1-container .controls .clear {
+  height: 40px;
+  border: none;
+  cursor: pointer;
+  padding: 0 16px;
+  font-size: 1rem;
+  font-family: "Luckiest Guy", cursive;
+  background-color: #f582ae;
+  color: white;
+  border-radius: 10px;
+  transition: background-color 0.3s;
+}
+
+.canvas1-container .controls button:hover {
+  background-color: #ec5b91;
+}
+.guess-controls {
+  width: 40%;
+}
+.guess-controls form {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+}
+
+.guess-input {
+  height: 40px;
+  width: 80%;
+  border: none;
+  outline: none;
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+  padding: 5px 10px;
+  font-size: 1rem;
+  font-family: "Luckiest Guy", cursive;
+}
+.guess-button {
+  height: 40px;
+  width: 20%;
+  border: none;
+  cursor: pointer;
+  padding: 10px;
+  font-size: 1.5rem;
+  font-family: "Luckiest Guy", cursive;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+  background-color: #f582ae;
+  color: #001858;
+}
+
+/* Tablets */
+@media screen and (max-width: 1024px) {
+  .canvas1-container {
+    height: auto;
+    padding: 10px;
+  }
+
+  .canvas2-container {
+    padding: 0 10px;
+  }
+
+  .canvas1-container canvas {
+    height: auto;
+    max-height: 400px;
+  }
+  .guess-controls {
     width: 100%;
     display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .guess-input {
+    width: 90%;
+    height: 50px;
+  }
+  .guess-button {
+    width: 10%;
+    height: 50px;
+  }
+
+  .canvas1-container .controls {
+    font-size: 1rem;
+    justify-content: center;
+    gap: 10px;
+  }
+}
+
+/* Mobile */
+@media screen and (max-width: 600px) {
+  .canvas1-container {
+    height: auto;
+    padding: 5px;
+  }
+
+  .canvas2-container {
+    padding: 0 5px;
+  }
+
+  .canvas1-container canvas {
+    width: 100%;
+    height: 100%;
+    max-height: 300px;
+  }
+
+  .canvas1-container .controls {
+    font-size: 0.9rem;
     flex-direction: column;
     align-items: center;
-}
-.canvas1-container canvas {
-    max-width: 100%;
-    height: auto;
-    box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
-}
-.canvas1-container .controls {
-    font-family: 'Luckiest Guy', cursive;
-    font-size: 1.2rem;
-    color: #001858;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    gap: 8px;
+    padding: 5px;
+  }
+
+  .canvas1-container .controls .clear {
     width: 100%;
-    max-width: 800px;
-    padding: 0 10px;
-    margin-top: 10px;
-    gap: 10px;
-    flex-wrap: wrap;
-}
-.canvas1-container .controls button {
-    height: 40px;
-    border: none;
-    cursor: pointer;
-    padding: 10px;
-    font-size: 1rem;
-    font-family: "Luckiest Guy", cursive;
-    background-color: #f582ae;
-    border-radius: 10px;
-}
-@media screen and (max-width: 1024px) {
-    .canvas1-container {
-        height: 50vh;
-        max-width: 100vw;
-        padding: 0;
-    }
-    .canvas1-container .controls {
-        font-size: 1rem;
-        flex-direction:row;
-        align-items: flex-start;
-        gap: 8px;
-    }
-    .canvas1-container canvas {
-        width: 100% !important;
-        height: 30% !important;
-    }
-}
-@media screen and (max-width: 600px) {
-    .canvas1-container {
-        height: 35vh;
-        padding: 0;
-    }
-    .canvas1-container .controls {
-        font-size: 0.9rem;
-        flex-direction: row;
-        align-items: flex-start;
-        gap: 6px;
-    }
-    .canvas1-container canvas {
-        width: 100% !important;
-        height: 30% !important;
-    }
+  }
+  .guess-controls {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .guess-controls form {
+    width: 100%;
+  }
+  .guess-input {
+    width: 100%;
+  }
+  .guess-button {
+    width: 50px;
+  }
 }

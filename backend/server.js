@@ -34,7 +34,7 @@ io.on("connection", (socket) => {
 });
 
   socket.on("send-drawing", ({ roomCode, drawing }) => {
-    io.to(roomCode).emit("receive-drawing", drawing);
+    socket.to(roomCode).emit("receive-drawing", drawing);
   });
   socket.on("send-message", ({ roomCode, message, username }) => {
     socket.to(roomCode).emit("receive-message", { message, username });

@@ -1,14 +1,17 @@
 import React, { useContext } from 'react';
 import '../styles/GuessWord.css'
 import { GameContext } from '../../context/GameContext';
+import { useNavigate } from 'react-router-dom';
 
 const RoomCode = () => {
   const { roomCode, guessingWord, deleteRoom } = useContext(GameContext);
+  const navigate = useNavigate();
   const handleClick = ()=>{
     if(roomCode){
       deleteRoom(roomCode);
       localStorage.removeItem('roomCode');
       localStorage.removeItem('hostName');
+      navigate('/');
     }
   }
   return (

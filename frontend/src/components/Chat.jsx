@@ -5,21 +5,22 @@ import { AuthContext } from '../../context/AuthContext.jsx';
 import profilrPic from '../assets/profile.png'
 
 const Chat = () => {
-  const { sendMessage, roomCode, socket } = useContext(GameContext);
+  const { sendMessage, roomCode, socket , historyMessages , setHistoryMessages } = useContext(GameContext);
   const { authUser } = useContext(AuthContext);
   const [messageInput, setMessageInput] = useState("");
-  const [messages, setMessages] = useState([]);
+  // const [messages, setMessages] = useState([]);
 
-  const handleSendMessage = () => {
+  const handleSendMessage = (e) => {
+    e.preventDefault();
     if (messageInput.trim() !== "") {
       sendMessage({ roomCode, message: messageInput, username: authUser.name });
-      setMessages((prevMessages) => [...prevMessages, { message: messageInput, username: authUser.name }]);
+      // setMessages((prevMessages) => [...prevMessages, { message: messageInput, username: authUser.name }]);
       setMessageInput("");
     }
   };
   useEffect(() => {
     const handleReceiveMessage = ({ message, username }) => {
-      setMessages((prevMessages) => [...prevMessages, { message, username }]);
+      setHistoryMessages((prevMessages) => [...prevMessages, { message, username }]);
     };
 
     if (roomCode) {
@@ -35,14 +36,14 @@ const Chat = () => {
         socket.off('receive-message', handleReceiveMessage);
       }
     };
-  }, [roomCode]);
+  }, [roomCode,socket,setHistoryMessages]);
 
 
   return (
     <div className='chat-container'>
       <div className="chat-interface">
         <div className="chat-messages">
-          {messages.map((msg, index) => (
+          {historyMessages.map((msg, index) => (
             msg.username === authUser.name ? (
               <div key={index} className='ownerMessage-container'>
                 <div className="ownerchat-element">
@@ -75,13 +76,15 @@ const Chat = () => {
         </div>
 
         <div className='chat-box'>
-          <input
+          <form onSubmit={handleSendMessage}>
+            <input
             type='text'
             placeholder='Type your message here...'
             className='chat-input'
             value={messageInput}
             onChange={(e) => setMessageInput(e.target.value)} />
-          <button className='send-button' onClick={handleSendMessage}>Send</button>
+          <button className='send-button' type='submit'>Send</button>
+          </form>
         </div>
       </div>
 
