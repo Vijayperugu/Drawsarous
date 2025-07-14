@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from 'react'
 import '../styles/Chat.css'
 import { GameContext } from '../../context/GameContext';
 import { AuthContext } from '../../context/AuthContext.jsx';
-import profilrPic from '../assets/profile.png'
+import profilrPic from '../assets/Profile.png'
 
 const Chat = () => {
   const { sendMessage, roomCode, socket , historyMessages , setHistoryMessages } = useContext(GameContext);
