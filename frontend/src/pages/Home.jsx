@@ -11,10 +11,11 @@ import { AuthContext } from '../../context/AuthContext.jsx';
 import axios from 'axios';
 
 
-function Home() {
+const Home = () => {
     const [gameState, setGameState] = useState("")
     const { joinRoomSocket} = useContext(GameContext);
     const { authUser } = useContext(AuthContext);
+    console.log("Auth User in Home:", authUser);
    
     return (
         <>
