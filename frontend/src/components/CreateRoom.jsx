@@ -6,7 +6,7 @@ import { GameContext } from "../../context/GameContext.jsx"
 import '../styles/CreateRoom.css'
 import { AuthContext } from '../../context/AuthContext.jsx'
 import { useNavigate } from 'react-router-dom'
-const Backend_URL = import.meta.env.VITE_BACKEND_URL;
+const Backend_URL = import.meta.env.VITE_BACKEND_URLL;
 
 const CreateRoom = ({ setGameState }) => {
   const { joinRoomSocket,setRoomName,setRoomCode,setGuessingWord } = useContext(GameContext)
