@@ -60,7 +60,7 @@ app.get("/", (req, res) => {
   res.send("Drawsarous Project");
 });
 app.use("/api/user", roomRoute);
-app.use("/user", userRouter);
+app.use("/api/user", userRouter);
 
 server.listen(8000, () => {
   console.log("Server is running");
