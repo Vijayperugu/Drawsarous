@@ -6,6 +6,7 @@ import { GameContext } from "../../context/GameContext.jsx"
 import '../styles/CreateRoom.css'
 import { AuthContext } from '../../context/AuthContext.jsx'
 import { useNavigate } from 'react-router-dom'
+const Backend_URL = import.meta.env.VITE_BACKEND_URL;
 
 const CreateRoom = ({ setGameState }) => {
   const { joinRoomSocket,setRoomName,setRoomCode,setGuessingWord } = useContext(GameContext)
@@ -15,7 +16,7 @@ const CreateRoom = ({ setGameState }) => {
   const handleCreate = async () => {
     if (!socket?.id) return alert("Socket not connected. Please try again.");
     try {
-      const response = await axios.post("http://localhost:8000/api/user/createRoom", {
+      const response = await axios.post(`${Backend_URL}/api/user/createRoom`, {
         socketId: authUser._id
       })
       const { roomCode, roomName, guessingWord } = response.data

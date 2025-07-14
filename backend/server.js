@@ -29,9 +29,9 @@ io.on("connection", (socket) => {
     socket.join(roomCode);
     io.to(roomCode).emit("player-joined", { username });
   });
- socket.on("clear-canvas", ({ roomCode }) => {
-  socket.to(roomCode).emit("clear-canvas");
-});
+  socket.on("clear-canvas", ({ roomCode }) => {
+    socket.to(roomCode).emit("clear-canvas");
+  });
 
   socket.on("send-drawing", ({ roomCode, drawing }) => {
     socket.to(roomCode).emit("receive-drawing", drawing);
@@ -39,7 +39,12 @@ io.on("connection", (socket) => {
   socket.on("send-message", ({ roomCode, message, username }) => {
     socket.to(roomCode).emit("receive-message", { message, username });
   });
-  
+
+  socket.on("winner",({roomCode, winner})=>{
+    io.to(roomCode).emit("announce-winner",winner);
+  });
+
+
   socket.on("disconnect", () => {
     console.log("User Disconnected", userId);
     delete userSocketMap[userId];

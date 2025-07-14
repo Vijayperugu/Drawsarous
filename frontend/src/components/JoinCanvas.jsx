@@ -1,17 +1,22 @@
 import React, { useRef, useEffect, useContext, useCallback, useState } from 'react'
 import '../styles/Canvas.css'
 import { GameContext } from '../../context/GameContext.jsx'
+import { AuthContext } from '../../context/AuthContext.jsx';
 import { IoSend } from "react-icons/io5";
 import { TiTick } from "react-icons/ti";
 import { FaXmark } from "react-icons/fa6";
+import { useNavigate } from 'react-router-dom';
 
 const JoinCanvas = () => {
   const canvasRef = useRef(null)
   const ctxRef = useRef(null)
+  const [winnerName, setWinnerName] = useState(null);
   const [guessedWord, setGuessedWord] = useState('')
   const [popUpVisible, setPopUpVisible] = useState(false)
   const [guessChatVisible, setGuessChatVisible] = useState(true)
-  const { socket, clearCanvas, roomCode, historyDrawings, guessingWord } = useContext(GameContext)
+  const { socket, clearCanvas, roomCode, historyDrawings, guessingWord, announceWinner } = useContext(GameContext)
+  const { authUser } = useContext(AuthContext)
+  const navigate = useNavigate();
 
   // Set up the canvas context
   useEffect(() => {
@@ -20,7 +25,7 @@ const JoinCanvas = () => {
   }, [])
 
   // Restore drawing history when it changes
-  useEffect(() => {
+useEffect(() => {
     const ctx = ctxRef.current
     const canvas = canvasRef.current
     if (!ctx || !canvas || !historyDrawings || !Array.isArray(historyDrawings)) return
@@ -85,15 +90,38 @@ const JoinCanvas = () => {
     }
   }, [socket, handleReceiveDrawing])
 
-  const handleGuessSubmit = (e) => {
-    e.preventDefault()
-    if (guessedWord.trim() === '') {
-      alert('Please enter a guess');
-      return;
-    }
-    setPopUpVisible(true);
-    setGuessChatVisible(false);
+  // Listen for winner announcement
+  useEffect(() => {
+    if (!socket) return;
+    const handleAnnounceWinner = (winner) => {
+      setWinnerName(winner);
+      setPopUpVisible(true);
+      setGuessChatVisible(false);
+    };
+    socket.on('announce-winner', handleAnnounceWinner);
+    return () => {
+      socket.off('announce-winner', handleAnnounceWinner);
+    };
+  }, [socket]);
+
+ const handleGuessSubmit = (e) => {
+  e.preventDefault();
+  if (!guessedWord.trim()) {
+    alert('Please enter a guess');
+    return;
   }
+  const cleanedGuess = guessedWord.trim().toLowerCase();
+  const cleanedAnswer = guessingWord.trim().toLowerCase();
+  if (cleanedGuess === cleanedAnswer) {
+    if (socket) {
+      socket.emit('winner', { roomCode, winner: authUser.name });
+    }
+  }
+  setGuessChatVisible(false);
+  setGuessedWord('');
+  setPopUpVisible(true);
+};
+
 
   return (
     <div className="canvas1-container">
@@ -114,7 +142,7 @@ const JoinCanvas = () => {
         )}
       </div>
 
-      {popUpVisible && (
+      {popUpVisible && !winnerName && (
         <div className='pop-up'>
           <div>
             {guessedWord === guessingWord ?
@@ -127,9 +155,30 @@ const JoinCanvas = () => {
                   setPopUpVisible(false)
                   setGuessChatVisible(true)
                   setGuessedWord('')
-                }}>Guess Again</button>
+                }}>Try Again</button>
               </div>
             }
+          </div>
+        </div>
+      )}
+
+      {winnerName && popUpVisible && (
+        <div className='pop-up'>
+          <div>
+            <div className='correct'>
+              <h3><TiTick /></h3>
+              <h2>{winnerName} guessed the word!</h2>
+              <button className='guess-again' onClick={() => {
+                setPopUpVisible(false);
+                setGuessChatVisible(true);
+                setGuessedWord('');
+                setWinnerName(null);
+                localStorage.removeItem('roomCode');
+                localStorage.removeItem('hostName');
+                navigate('/'); // Redirect to home page
+                
+              }}>Exit Room</button>
+            </div>
           </div>
         </div>
       )}

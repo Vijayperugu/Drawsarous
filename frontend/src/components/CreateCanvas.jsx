@@ -1,6 +1,8 @@
 import React, { useRef, useEffect, useState, useContext, useCallback } from 'react'
 import '../styles/Canvas.css'
 import { GameContext } from '../../context/GameContext.jsx'
+import { TiTick } from "react-icons/ti";
+import { useNavigate } from 'react-router-dom';
 
 const CreateCanvas = () => {
   const canvasRef = useRef(null)
@@ -8,8 +10,10 @@ const CreateCanvas = () => {
   const [drawing, setDrawing] = useState(false)
   const [color, setColor] = useState('#000000')
   const [size, setSize] = useState(4)
-  const { sendDrawing, roomCode, clearCanvas, clearDrawingHistory, historyDrawings } = useContext(GameContext)
-  const [isNewStroke, setIsNewStroke] = useState(false)
+  const [winnerName, setWinnerName] = useState(null)
+  const [popUpVisible, setPopUpVisible] = useState(false)
+  const { sendDrawing, roomCode, clearCanvas, clearDrawingHistory, historyDrawings, socket, deleteRoom } = useContext(GameContext)
+  const navigate = useNavigate();
 
   // Draw function
   const draw = useCallback((event) => {
@@ -28,17 +32,15 @@ const CreateCanvas = () => {
 
     if (sendDrawing) {
       sendDrawing(
-        { offsetX, offsetY, color, size, isNewStroke },
+        { offsetX, offsetY, color, size, isNewStroke: false },
         roomCode
       )
-      if (isNewStroke) setIsNewStroke(false)
     }
-  }, [drawing, color, size, sendDrawing, isNewStroke, roomCode])
+  }, [drawing, color, size, sendDrawing, roomCode])
 
   // On mouse down, start a new stroke
   const handleMouseDown = (event) => {
     setDrawing(true)
-    setIsNewStroke(true)
     // Send the first point as a new stroke
     if (sendDrawing) {
       const { offsetX, offsetY } = event.nativeEvent
@@ -46,7 +48,6 @@ const CreateCanvas = () => {
         { offsetX, offsetY, color, size, isNewStroke: true },
         roomCode
       )
-      setIsNewStroke(false)
     }
     const ctx = ctxRef.current
     if (ctx) {
@@ -99,6 +100,20 @@ const CreateCanvas = () => {
     }
   }, [drawing, draw])
 
+  // Listen for winner announcement
+  useEffect(() => {
+    if (socket) {
+      const handleAnnounceWinner = (winner) => {
+        setWinnerName(winner);
+        setPopUpVisible(true);
+      };
+      socket.on('announce-winner', handleAnnounceWinner);
+      return () => {
+        socket.off('announce-winner', handleAnnounceWinner);
+      };
+    }
+  }, [socket]);
+
   return (
     <div className="canvas1-container">
       <div className="canvas2-container">
@@ -142,6 +157,24 @@ const CreateCanvas = () => {
           </button>
         </div>
       </div>
+      {winnerName && popUpVisible && (
+        <div className='pop-up'>
+          <div>
+            <div className='correct'>
+              <h3><TiTick /></h3>
+              <h2>{winnerName} guessed the word!</h2>
+              <button className='guess-again' onClick={() => {
+                setPopUpVisible(false);
+                setWinnerName(null);
+                deleteRoom(roomCode);
+                localStorage.removeItem('roomCode');
+                localStorage.removeItem('hostName');
+                navigate('/');
+              }}>Exit Room</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

@@ -3,6 +3,7 @@ import { io } from 'socket.io-client'
 import { AuthContext } from './AuthContext.jsx';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+const Backend_URL = import.meta.env.VITE_BACKEND_URL ;
 
 export const GameContext = createContext()
 
@@ -14,13 +15,14 @@ export const GameProvider = ({ children }) => {
   const [historyDrawings, setHistoryDrawings] = useState([]);
   const [historyMessages, setHistoryMessages] = useState([]);
   const [guessingWord, setGuessingWord] = useState('');
+  const [winner, setWinner] = useState(null);
   const { socket, authUser } = useContext(AuthContext)
   const navigate = useNavigate();
 
   useEffect(() => {
     const msgHistory = async () => {
       if (roomCode) {
-        const res = await axios.get(`http://localhost:8000/api/user/getMessageHistory/${roomCode}`);
+        const res = await axios.get(`${Backend_URL}/api/user/getMessageHistory/${roomCode}`);
         if (res.data && res.data.success) {
           setHistoryMessages(res.data.history);
         } else {
@@ -51,14 +53,14 @@ export const GameProvider = ({ children }) => {
       if (authUser && socket && savedRoom && host !== authUser.name) {
         try {
           // Check if room is active
-          const { data } = await axios.get(`http://localhost:8000/api/user/roomActive/${savedRoom}`);
+          const { data } = await axios.get(`${import.meta.env.Backend_URL}/api/user/roomActive/${savedRoom}`);
 
           if (data.active) {
             console.log("Guessing word:", data.guessingWord);
             setRoomCode(savedRoom);
             setRoomName(data.roomName);
             setGuessingWord(data.guessingWord);
-            const drawingRes = await axios.get(`http://localhost:8000/api/user/getDrawingHistory/${savedRoom}`);
+            const drawingRes = await axios.get(`${Backend_URL}/api/user/getDrawingHistory/${savedRoom}`);
             if (drawingRes.data && drawingRes.data.success) {
               setHistoryDrawings(drawingRes.data.history);
             } else {
@@ -71,11 +73,11 @@ export const GameProvider = ({ children }) => {
           console.error("Error checking room active status or fetching drawing history:", error);
         }
       } else if (authUser && socket && savedRoom && host === authUser.name) {
-        const { data } = await axios.get(`http://localhost:8000/api/user/roomActive/${savedRoom}`);
+        const { data } = await axios.get(`${Backend_URL}/api/user/roomActive/${savedRoom}`);
         if (data.active) {
           setGuessingWord(data.guessingWord);
           setRoomName(data.roomName);
-          const drawingRes = await axios.get(`http://localhost:8000/api/user/getDrawingHistory/${savedRoom}`);
+          const drawingRes = await axios.get(`${Backend_URL}/api/user/getDrawingHistory/${savedRoom}`);
           if (drawingRes.data && drawingRes.data.success) {
             setHistoryDrawings(drawingRes.data.history);
           } else {
@@ -111,7 +113,7 @@ export const GameProvider = ({ children }) => {
     if (socket) {
       socket.emit('send-message', { roomCode, message, username: authUser.name })
     }
-    const res = await axios.post('http://localhost:8000/api/user/addMessages', {
+    const res = await axios.post(`${Backend_URL}/api/user/addMessages`, {
       roomCode,
       message: { message, username: authUser.name }
     });
@@ -122,7 +124,7 @@ export const GameProvider = ({ children }) => {
 
   const sendDrawing = (data, roomCode) => {
     socket.emit('send-drawing', { roomCode, drawing: data })
-    const { res } = axios.post('http://localhost:8000/api/user/addDrawing', {
+    const { res } = axios.post(`${Backend_URL}/api/user/addDrawing`, {
       roomCode,
       drawing: data
     })
@@ -133,7 +135,7 @@ export const GameProvider = ({ children }) => {
 
   const clearDrawingHistory = async (roomCode) => {
     try {
-      const { data } = await axios.post('http://localhost:8000/api/user/clearDrawingHistory', { roomCode });
+      const { data } = await axios.post(`${Backend_URL}/api/user/clearDrawingHistory`, { roomCode });
       if (data.success) {
         setHistoryDrawings([]);
       }
@@ -144,7 +146,7 @@ export const GameProvider = ({ children }) => {
 
   const deleteRoom = async (roomCode) => {
     try {
-      const { data } = await axios.post(`http://localhost:8000/api/user/deleteRoom/${roomCode}`);
+      const { data } = await axios.post(`${Backend_URL}/api/user/deleteRoom/${roomCode}`);
       if (data.success) {
         setRoomCode(null);
         setRoomName(null);
@@ -153,6 +155,13 @@ export const GameProvider = ({ children }) => {
       }
     } catch (error) {
       console.error("Error deleting room:", error);
+    }
+  }
+
+  const announceWinner = (roomCode, winner) => {
+    if (socket) {
+      socket.emit('winner', { roomCode, winner });
+      setWinner(winner);
     }
   }
 
@@ -175,6 +184,8 @@ export const GameProvider = ({ children }) => {
     deleteRoom,
     historyMessages,
     setHistoryMessages,
+    winner,
+    announceWinner,
   }
 
   return (

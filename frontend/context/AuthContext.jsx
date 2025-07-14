@@ -2,6 +2,7 @@ import axios from "axios";
 import { createContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { io } from 'socket.io-client';
+const Backend_URL = import.meta.env.VITE_BACKEND_URL;
 
 export const AuthContext = createContext();
 
@@ -12,6 +13,7 @@ export const AuthProvider = ({ children }) => {
     const [socket, setSocket] = useState(null);
     const [errorMessage,setErrorMessage]=useState('');
     const navigate = useNavigate();
+    console.log("Backend URL:", Backend_URL);
     useEffect(() => {
         if (token) {
         axios.defaults.headers.common["token"] = token;
@@ -24,7 +26,7 @@ export const AuthProvider = ({ children }) => {
 
     const checkAuth = async () => {
     try {
-        const { data } = await axios.get("http://localhost:8000/user/check");
+        const { data } = await axios.get(`${Backend_URL}/user/check`);
         if (data.success) {
             console.log(data.user)
             setAuthUser(data.user);
@@ -41,7 +43,7 @@ export const AuthProvider = ({ children }) => {
 }
     const connectSocket = (userData) => {
         if (!userData || socket?.connected) return
-        const newSocket = io("http://localhost:8000", {
+        const newSocket = io(`${Backend_URL}`, {
             query: {
                 userId: userData._id,
             }
@@ -59,7 +61,7 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (state, Credential) => {
         try {
-            const { data } = await axios.post(`http://localhost:8000/user/${state}`, Credential)
+            const { data } = await axios.post(`${Backend_URL}/user/${state}`, Credential)
             if (data.success) {
                 setAuthUser(data.userData);
                 connectSocket(data.userData);

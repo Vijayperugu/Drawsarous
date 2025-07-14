@@ -6,6 +6,7 @@ import { GameContext } from '../../context/GameContext.jsx'
 import { AuthContext } from '../../context/AuthContext.jsx'
 import { useNavigate } from 'react-router-dom'
 import "../styles/PrivateRoom.css"
+const Backend_URL = import.meta.env.VITE_BACKEND_URL;
 
 const PrivateRoom = ({ setGameState }) => {
   const [roomCode, setRoomCode] = useState("")
@@ -20,7 +21,7 @@ const PrivateRoom = ({ setGameState }) => {
     if (!roomCode) return alert("Please enter the Room ID")
     if (!socket?.id) return alert("Socket not connected. Please try again.");
     try {
-      const { data } = await axios.post("http://localhost:8000/api/user/joinRoom", {
+      const { data } = await axios.post(`${Backend_URL}/api/user/joinRoom`, {
         roomCode,
         socketId: authUser._id
       })
