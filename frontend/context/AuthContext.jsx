@@ -32,7 +32,7 @@ export const AuthProvider = ({ children }) => {
 
     const checkAuth = async () => {
         try {
-            const { data } = await axios.get(`${Backend_URL}/user/check`);
+            const { data } = await axios.get(`${Backend_URL}/api/user/check`);
             if (data.success) {
                 console.log(data.user)
                 setAuthUser(data.user);
@@ -67,7 +67,7 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (state, Credential) => {
         try {
-            const { data } = await axios.post(`${Backend_URL}/user/${state}`, Credential)
+            const { data } = await axios.post(`${Backend_URL}/api/user/${state}`, Credential)
             if (data.success) {
                 setAuthUser(data.userData);
                 connectSocket(data.userData);
