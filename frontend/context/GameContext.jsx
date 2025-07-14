@@ -53,7 +53,7 @@ export const GameProvider = ({ children }) => {
       if (authUser && socket && savedRoom && host !== authUser.name) {
         try {
           // Check if room is active
-          const { data } = await axios.get(`${import.meta.env.Backend_URL}/api/user/roomActive/${savedRoom}`);
+          const { data } = await axios.get(`${Backend_URL}/api/user/roomActive/${savedRoom}`);
 
           if (data.active) {
             console.log("Guessing word:", data.guessingWord);
