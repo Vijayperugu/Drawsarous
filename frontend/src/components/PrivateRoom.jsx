@@ -6,7 +6,7 @@ import { GameContext } from '../../context/GameContext.jsx'
 import { AuthContext } from '../../context/AuthContext.jsx'
 import { useNavigate } from 'react-router-dom'
 import "../styles/PrivateRoom.css"
-const Backend_URL = import.meta.env.VITE_BACKEND_URLL;
+const Backend_URL = "https://drawsarous.onrender.com";
 
 const PrivateRoom = ({ setGameState }) => {
   const [roomCode, setRoomCode] = useState("")
