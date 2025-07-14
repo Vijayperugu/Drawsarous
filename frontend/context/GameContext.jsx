@@ -3,7 +3,7 @@ import { io } from 'socket.io-client'
 import { AuthContext } from './AuthContext.jsx';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-const Backend_URL = import.meta.env.VITE_BACKEND_URLL;
+const Backend_URL = "https://drawsarous.onrender.com/";
 
 export const GameContext = createContext()
 
