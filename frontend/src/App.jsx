@@ -14,8 +14,9 @@ const ProtectedRoute = ({ children }) => {
 };
 
 const App = () => {
-  const { authUser } = useContext(AuthContext);
+  const { authUser, loading } = useContext(AuthContext);
   console.log('Auth User:', authUser);
+  if (loading) return <div style={{ padding: "50px", textAlign: "center" }}>Loading...</div>;
 
   return (
     <>

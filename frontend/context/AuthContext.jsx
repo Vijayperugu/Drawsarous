@@ -11,36 +11,42 @@ export const AuthProvider = ({ children }) => {
     const [authUser, setAuthUser] = useState(null);
     const [onlineUser, setOnlineUser] = useState([]);
     const [socket, setSocket] = useState(null);
-    const [errorMessage,setErrorMessage]=useState('');
+    const [errorMessage, setErrorMessage] = useState('');
+    const [loading, setLoading] = useState(true);
+
     const navigate = useNavigate();
     console.log("Backend URL:", Backend_URL);
     useEffect(() => {
-        if (token) {
-        axios.defaults.headers.common["token"] = token;
-        checkAuth();
-    } else {
-        setAuthUser(null);
-    }
-    setErrorMessage("");
-    },[token])
+        const init = async () => {
+            if (token) {
+                axios.defaults.headers.common["token"] = token;
+                await checkAuth();
+            } else {
+                setAuthUser(null);
+            }
+            setLoading(false);  // done loading
+        };
+        init();
+    }, [token]);
+
 
     const checkAuth = async () => {
-    try {
-        const { data } = await axios.get(`${Backend_URL}/user/check`);
-        if (data.success) {
-            console.log(data.user)
-            setAuthUser(data.user);
-            connectSocket(data.user);
+        try {
+            const { data } = await axios.get(`${Backend_URL}/user/check`);
+            if (data.success) {
+                console.log(data.user)
+                setAuthUser(data.user);
+                connectSocket(data.user);
+            }
+        } catch (error) {
+            if (error.response && error.response.status === 401) {
+                setAuthUser(null);
+                setToken(null);
+                localStorage.removeItem("token");
+            }
+            console.log(error);
         }
-    } catch (error) {
-        if (error.response && error.response.status === 401) {
-            setAuthUser(null);
-            setToken(null);
-            localStorage.removeItem("token");
-        }
-        console.log(error);
     }
-}
     const connectSocket = (userData) => {
         if (!userData || socket?.connected) return
         const newSocket = io(`${Backend_URL}`, {
@@ -70,7 +76,7 @@ export const AuthProvider = ({ children }) => {
                 localStorage.setItem("token", data.token);
                 return true
 
-            }else{
+            } else {
                 setErrorMessage(data.message);
                 return false;
             }
@@ -80,7 +86,7 @@ export const AuthProvider = ({ children }) => {
 
         }
     }
-    const logout = async ()=>{
+    const logout = async () => {
         localStorage.removeItem("token");
         setToken(null);
         setAuthUser(null);
@@ -98,11 +104,12 @@ export const AuthProvider = ({ children }) => {
         socket,
         login,
         errorMessage,
-        logout
+        logout,
+        loading
 
 
     }
-    if(authUser) console.log("AuthUser:", authUser);
+    if (authUser) console.log("AuthUser:", authUser);
 
     return (
         <AuthContext.Provider value={value}>

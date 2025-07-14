@@ -1,5 +1,4 @@
 import React, { useState, useContext, useEffect } from 'react'
-import Navbar from '../components/Navbar'
 import { FaPlus } from "react-icons/fa";
 import { FaPencil } from "react-icons/fa6";
 import logo from '../assets/logo.png'
@@ -8,12 +7,10 @@ import PrivateRoom from '../components/PrivateRoom';
 import CreateRoom from '../components/CreateRoom';
 import { GameContext } from '../../context/GameContext';
 import { AuthContext } from '../../context/AuthContext.jsx';
-import axios from 'axios';
 
 
 const Home = () => {
     const [gameState, setGameState] = useState("")
-    const { joinRoomSocket} = useContext(GameContext);
     const { authUser } = useContext(AuthContext);
     console.log("Auth User in Home:", authUser);
    
