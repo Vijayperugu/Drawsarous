@@ -3,7 +3,7 @@ import JoinCanvas from "../components/JoinCanvas"
 import Chat from "../components/Chat"
 import GuessingWord from "../components/GuessingWord"
 import { BsChatText } from "react-icons/bs";
-import "../styles/joinRoom.css"
+import "../styles/JoinRoom.css"
 
 const JoinRoom = () => {
   return (
