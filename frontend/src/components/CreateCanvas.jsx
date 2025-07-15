@@ -38,6 +38,28 @@ const CreateCanvas = () => {
     }
   }, [drawing, color, size, sendDrawing, roomCode])
 
+  const handleTouchStart = (e) => {
+    const touch = e.touches[0];
+    const canvas = canvasRef.current;
+    const rect = canvas.getBoundingClientRect();
+    handleMouseDown({
+      nativeEvent: {
+        offsetX: touch.clientX - rect.left,
+        offsetY: touch.clientY - rect.top,
+      }
+    });
+  };
+
+  const handleTouchMove = (e) => {
+    const touch = e.touches[0];
+    const canvas = canvasRef.current;
+    const rect = canvas.getBoundingClientRect();
+    draw({
+      offsetX: touch.clientX - rect.left,
+      offsetY: touch.clientY - rect.top,
+    });
+  };
+
   // On mouse down, start a new stroke
   const handleMouseDown = (event) => {
     setDrawing(true)
@@ -132,6 +154,9 @@ const CreateCanvas = () => {
             const ctx = ctxRef.current
             if (ctx) ctx.beginPath()
           }}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={() => setDrawing(false)}
           style={{ backgroundColor: 'white', cursor: 'crosshair' }}
         />
         <div className="controls">
