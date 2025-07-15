@@ -38,27 +38,62 @@ const CreateCanvas = () => {
     }
   }, [drawing, color, size, sendDrawing, roomCode])
 
-  const handleTouchStart = (e) => {
-    const touch = e.touches[0];
-    const canvas = canvasRef.current;
+  const getTouchPosition = (touch, canvas) => {
     const rect = canvas.getBoundingClientRect();
-    handleMouseDown({
-      nativeEvent: {
-        offsetX: touch.clientX - rect.left,
-        offsetY: touch.clientY - rect.top,
-      }
-    });
+    return {
+      offsetX: touch.clientX - rect.left,
+      offsetY: touch.clientY - rect.top
+    };
+  };
+
+  const handleTouchStart = (e) => {
+    e.preventDefault(); // Prevents scroll/zoom on mobile
+    setDrawing(true);
+
+    const canvas = canvasRef.current;
+    const ctx = ctxRef.current;
+    const touch = e.touches[0];
+
+    const { offsetX, offsetY } = getTouchPosition(touch, canvas);
+
+    ctx.beginPath();
+    ctx.moveTo(offsetX, offsetY);
+
+    if (sendDrawing) {
+      sendDrawing({ offsetX, offsetY, color, size, isNewStroke: true }, roomCode);
+    }
   };
 
   const handleTouchMove = (e) => {
-    const touch = e.touches[0];
+    e.preventDefault(); // Prevents scroll/zoom on mobile
+    if (!drawing) return;
+
     const canvas = canvasRef.current;
-    const rect = canvas.getBoundingClientRect();
-    draw({
-      offsetX: touch.clientX - rect.left,
-      offsetY: touch.clientY - rect.top,
-    });
+    const ctx = ctxRef.current;
+    const touch = e.touches[0];
+
+    const { offsetX, offsetY } = getTouchPosition(touch, canvas);
+
+    ctx.lineWidth = size;
+    ctx.lineCap = 'round';
+    ctx.strokeStyle = color;
+
+    ctx.lineTo(offsetX, offsetY);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(offsetX, offsetY);
+
+    if (sendDrawing) {
+      sendDrawing({ offsetX, offsetY, color, size, isNewStroke: false }, roomCode);
+    }
   };
+
+  const handleTouchEnd = () => {
+    setDrawing(false);
+    const ctx = ctxRef.current;
+    if (ctx) ctx.beginPath();
+  };
+
 
   // On mouse down, start a new stroke
   const handleMouseDown = (event) => {
@@ -156,7 +191,7 @@ const CreateCanvas = () => {
           }}
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
-          onTouchEnd={() => setDrawing(false)}
+          onTouchEnd={handleTouchEnd}
           style={{ backgroundColor: 'white', cursor: 'crosshair' }}
         />
         <div className="controls">
