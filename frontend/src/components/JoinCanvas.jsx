@@ -13,6 +13,7 @@ const JoinCanvas = () => {
   const [winnerName, setWinnerName] = useState(null);
   const [guessedWord, setGuessedWord] = useState('')
   const [popUpVisible, setPopUpVisible] = useState(false)
+  const [notGuessedVisible, setNotGuessedVisible] = useState(false)
   const [guessChatVisible, setGuessChatVisible] = useState(true)
   const { socket, clearCanvas, roomCode, historyDrawings, guessingWord, announceWinner } = useContext(GameContext)
   const { authUser } = useContext(AuthContext)
@@ -116,6 +117,10 @@ useEffect(() => {
     if (socket) {
       socket.emit('winner', { roomCode, winner: authUser.name });
     }
+  }else{
+    setNotGuessedVisible(true);
+    setGuessChatVisible(false);
+    setWinnerName(null);
   }
   setGuessChatVisible(false);
   setGuessedWord('');
@@ -142,7 +147,7 @@ useEffect(() => {
         )}
       </div>
 
-      {popUpVisible && !winnerName && (
+      {notGuessedVisible && !winnerName && (
         <div className='pop-up'>
           <div>
             {guessedWord === guessingWord ?
@@ -154,6 +159,7 @@ useEffect(() => {
                 <button className='guess-again' onClick={() => {
                   setPopUpVisible(false)
                   setGuessChatVisible(true)
+                  setNotGuessedVisible(false)
                   setGuessedWord('')
                 }}>Try Again</button>
               </div>
