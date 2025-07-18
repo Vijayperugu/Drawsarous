@@ -6,6 +6,7 @@ import userRouter from "./routes/userRoute.js";
 import { Server } from "socket.io";
 import RoomModal from "./model/RoomModal.js";
 import roomRoute from "./routes/roomRoute.js";
+import guestRouter from "./routes/guestRoute.js";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -61,6 +62,8 @@ app.get("/", (req, res) => {
 });
 app.use("/api/user", roomRoute);
 app.use("/api/user", userRouter);
+app.use("/api/user", guestRouter);
+
 
 server.listen(8000, () => {
   console.log("Server is running");

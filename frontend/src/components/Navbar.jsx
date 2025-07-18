@@ -4,6 +4,7 @@ import logo from '../assets/logo.png'
 import "../styles/Navbar.css"
 import "../styles/Dropdown.css"
 import { AuthContext } from '../../context/AuthContext.jsx'
+import profile from '../assets/Profile.png'
 
 const Navbar = ({ owner }) => {
   const [showDropdown, setShowDropdown] = useState(false);
@@ -49,7 +50,14 @@ const Navbar = ({ owner }) => {
         {showDropdown && (
           <div className="dropdown-wrapper" ref={dropdownRef}>
             <div className="dropdown-card">
+             <div className="user-info">
+               <img
+                className="user-profile"
+                src={profile}
+                alt=""
+              />
               <h3>{authUser?.name || "Guest User"}</h3>
+             </div>
               <ul>
                 <li>My Profile</li>
                 <li>Settings</li>

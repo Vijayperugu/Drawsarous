@@ -19,8 +19,6 @@
 
 .dropdown-card h3 {
   font-size: 1.2rem;
-  margin-bottom: 1rem;
-  border-bottom: 1px solid #001858;
   padding-bottom: 0.5rem;
   text-align: center;
 }
@@ -40,6 +38,21 @@
 .dropdown-card li:hover {
   background-color: #fcd5ce;
   border-radius: 5px;
+}
+.user-info{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-direction: column;
+    border-bottom: 1px solid #001858;
+
+}
+.user-profile{
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  object-fit: cover;
+  text-align: center;
 }
 
 @keyframes fadeIn {

@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken'
 import userModal from '../model/UserModal.js';
+import guestModal from '../model/guestModal.js';
 
 
 export const protectRoute = async(req,res,next)=>{
@@ -25,4 +26,24 @@ export const protectRoute = async(req,res,next)=>{
         console.log(error);
         res.status(401).json({ success: false, message: "Unauthorized" });
     }
+}
+
+export const guestProtectRoute = async (req, res, next) => {
+  try {
+    const token = req.headers.token;
+    if (!token) {
+      return res.status(401).json({ success: false, message: "Token Missing" });
+    }
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    const guestUser = await guestModal.findById(decoded.id);
+    if (!guestUser) {
+      return res.status(404).json({ success: false, message: "Guest User Not Found" });
+    }
+    req.guestUser = guestUser;
+    next();
+  } catch (error) {
+    console.log(error);
+    res.status(401).json({ success: false, message: "Unauthorized" });
+  }
 }

@@ -98,6 +98,7 @@ const registerUser = async (req, res) => {
   }
 };
 
+
 const checkAuth =(req,res)=>{
   res.json({
     success:true,

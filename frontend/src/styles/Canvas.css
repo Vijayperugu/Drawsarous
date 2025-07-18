@@ -18,8 +18,8 @@
 }
 
 .canvas1-container canvas {
-  width: 100%;
-  height: auto;
+  width: 800px;
+  height: 500px;
   max-height: 500px;
   background-color: white;
   cursor: not-allowed;
