@@ -2,7 +2,7 @@ import axios from "axios";
 import { createContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { io } from 'socket.io-client';
-const Backend_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+const Backend_URL = "https://drawsarous.onrender.com";
 
 export const AuthContext = createContext();
 
