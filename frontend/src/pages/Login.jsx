@@ -11,7 +11,7 @@ const Login = () => {
     const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const {login,errorMessage}= useContext(AuthContext);
+    const {login,errorMessage,loginAsGuest}= useContext(AuthContext);
 
 
 
@@ -20,6 +20,12 @@ const Login = () => {
         const success = await login("login",{email,password})  
         if(success){
             navigate('/')
+        }
+    }
+    const handleGuestLogin = async () => {
+        const success = await loginAsGuest();
+        if (success) {
+            navigate('/');
         }
     }
 
@@ -36,9 +42,8 @@ const Login = () => {
                             <img src={google} alt="" />
                             <p><span className="extra-text">Login with</span> Google</p>
                         </button>
-                        <button className="social-btn">
-                            <img src={facbook} />
-                            <p><span className="extra-text">Login with</span> Facebook</p>
+                        <button className="social-btn" onClick={handleGuestLogin}>
+                            <p><span className="extra-text">Login As</span> Guest</p>
                         </button>
                     </div>
                     <span className="or"></span>

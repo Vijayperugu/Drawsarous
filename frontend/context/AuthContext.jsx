@@ -99,7 +99,25 @@ export const AuthProvider = ({ children }) => {
         navigate("/login");
 
     }
-
+    const loginAsGuest = async (username) => {
+        try {
+            const { data } = await axios.post(`${Backend_URL}/api/user/guest`, { username });
+            if (data.success) {
+                setAuthUser(data.userData);
+                connectSocket(data.userData);
+                axios.defaults.headers.common["token"] = data.token;
+                setToken(data.token);
+                localStorage.setItem("token", data.token);
+                setErrorMessage('');
+                return true;
+            } else {
+                console.error("Guest login failed:", data.message);
+                return false;
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
     const value = {
         authUser,
@@ -108,7 +126,8 @@ export const AuthProvider = ({ children }) => {
         login,
         errorMessage,
         logout,
-        loading
+        loading,
+        loginAsGuest
 
 
     }
