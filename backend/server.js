@@ -53,7 +53,10 @@ io.on("connection", (socket) => {
   });
 });
 
-app.use(cors());
+app.use(cors({
+  origin: "https://drawsarous.vercel.app",
+  credentials: true
+}));
 app.use(express.json());
 connectDb();
 
