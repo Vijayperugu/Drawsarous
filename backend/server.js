@@ -8,13 +8,28 @@ import RoomModal from "./model/RoomModal.js";
 import roomRoute from "./routes/roomRoute.js";
 import guestRouter from "./routes/guestRoute.js";
 import dotenv from "dotenv";
+
 dotenv.config();
 
 const app = express();
+
+app.use(cors({
+  origin: "https://drawsarous.vercel.app",
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+}));
+
+app.use(express.json());
+
 const server = http.createServer(app);
 
 export const io = new Server(server, {
-  cors: { origin: "*" },
+  cors: {
+    origin: "https://drawsarous.vercel.app",
+    methods: ["GET", "POST"],
+    credentials: true,
+  },
 });
 
 export const userSocketMap = {};
@@ -23,13 +38,13 @@ io.on("connection", (socket) => {
   const userId = socket.handshake.query.userId;
   console.log("UserConnected", userId);
   if (userId) userSocketMap[userId] = socket.id;
-
   io.emit("getOnlineUsers", Object.keys(userSocketMap));
 
   socket.on("join-room", async ({ roomCode, username }) => {
     socket.join(roomCode);
     io.to(roomCode).emit("player-joined", { username });
   });
+
   socket.on("clear-canvas", ({ roomCode }) => {
     socket.to(roomCode).emit("clear-canvas");
   });
@@ -37,14 +52,14 @@ io.on("connection", (socket) => {
   socket.on("send-drawing", ({ roomCode, drawing }) => {
     socket.to(roomCode).emit("receive-drawing", drawing);
   });
+
   socket.on("send-message", ({ roomCode, message, username }) => {
     socket.to(roomCode).emit("receive-message", { message, username });
   });
 
-  socket.on("winner",({roomCode, winner})=>{
-    io.to(roomCode).emit("announce-winner",winner);
+  socket.on("winner", ({ roomCode, winner }) => {
+    io.to(roomCode).emit("announce-winner", winner);
   });
-
 
   socket.on("disconnect", () => {
     console.log("User Disconnected", userId);
@@ -53,20 +68,15 @@ io.on("connection", (socket) => {
   });
 });
 
-app.use(cors({
-  origin: "https://drawsarous.vercel.app",
-  credentials: true
-}));
-app.use(express.json());
 connectDb();
 
 app.get("/", (req, res) => {
   res.send("Drawsarous Project");
 });
+
 app.use("/api/user", roomRoute);
 app.use("/api/user", userRouter);
 app.use("/api/user", guestRouter);
-
 
 server.listen(8000, () => {
   console.log("Server is running");
